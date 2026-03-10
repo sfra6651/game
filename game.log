@@ -1,0 +1,8 @@
+[19:53:04.577] [INFO] Log started: game.log
+[19:53:06.190] [INFO] Movement click at grid (3,2) onGrid=1 isHighlighted=1 actorIdx=-1 highlightCount=23
+[19:53:06.190] [INFO] Move accepted -> (3,2)
+[19:53:06.205] [INFO] End turn for actor 0
+[19:53:06.222] [INFO] End turn for actor 1
+[19:53:21.857] [INFO] Space pressed: skip movement
+[19:53:21.858] [INFO] End turn for actor 0
+[19:53:21.875] [INFO] End turn for actor 1

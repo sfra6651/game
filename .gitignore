@@ -1,0 +1,5 @@
+/build
+.idea/
+.cache/
+.clangd
+.DS_Store
