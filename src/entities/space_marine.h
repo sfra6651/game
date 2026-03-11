@@ -1,4 +1,9 @@
+#pragma once
+
 #include "raylib.h"
+
+#include "ecs/entity.h"
+#include "ecs/world.h"
 
 struct SpaceMarineConfig {
     Texture2D &texture;
@@ -8,7 +13,7 @@ struct SpaceMarineConfig {
 
 };
 
-Entity spaceMarineFactory(
+inline Entity spaceMarineFactory(
     World &world,
     SpaceMarineConfig config)
 {

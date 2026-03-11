@@ -9,10 +9,10 @@
 
 #include "entity.h"
 
-struct World {
-    int WINDOW_WIDTH {600};
-    int WINDOW_HEIGHT {800};
+#define WINDOW_WIDTH 1920
+#define WINDOW_HEIGHT 1080
 
+struct World {
     Entities entities{};
     std::unordered_map<int, Position> positions;
     std::unordered_map<int, Size> sizes;
@@ -21,15 +21,21 @@ struct World {
 
     std::vector<std::function<void(int)>> cleanUps;
 
-    template<typename T>
-    void attach(Entity entity, std::unordered_map<int, T> &store, T component){
-        store[entity.id] = component;
+    std::function<void()> inputSystem;
+
+    void registerInputSystem(std::function<void()> fn) {
+        inputSystem = fn;
     };
 
     template<typename T>
     void registerCleanUp(std::unordered_map<int, T> &store){
         cleanUps.push_back([&store] (int id) { store.erase(id); });
     }
+
+    template<typename T>
+    void attach(Entity entity, std::unordered_map<int, T> &store, T component){
+        store[entity.id] = component;
+    };
 
     template<typename T>
     void erase(Entity entity) {
@@ -87,15 +93,5 @@ struct World {
         };
     };
 
-    void proccessInput(int id) {
-        if (IsKeyDown(KEY_W)) velocities[id].y = -4;
-        if (IsKeyDown(KEY_S)) velocities[id].y = 4;
-        if (IsKeyDown(KEY_A)) velocities[id].x = -4;
-        if (IsKeyDown(KEY_D)) velocities[id].x = 4;
 
-        if (IsKeyReleased(KEY_W)) velocities[id].y = 0;
-        if (IsKeyReleased(KEY_S)) velocities[id].y = 0;
-        if (IsKeyReleased(KEY_A)) velocities[id].x = 0;
-        if (IsKeyReleased(KEY_D)) velocities[id].x = 0;
-    };
 };
