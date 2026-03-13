@@ -18,11 +18,11 @@ inline Entity projectileFactory (
     World &world,
     ProjectileConfig config)
 {
-    Entity player = world.entities.create();
-    world.attach(player, world.positions, config.pos);
-    world.attach(player, world.renderables, Renderable{config.texture});
-    world.attach(player, world.sizes, config.size);
-    world.attach(player, world.directions, config.direction);
-    world.attach(player, world.speeds, config.speed);
-    return player;
+    Entity projectile = world.entities.create();
+    world.attach(projectile, world.positions, config.pos);
+    world.attach(projectile, world.renderables, Renderable{config.texture});
+    world.attach(projectile, world.sizes, config.size);
+    world.attach(projectile, world.directions, config.direction);
+    world.attach(projectile, world.speeds, config.speed);
+    return projectile;
 };

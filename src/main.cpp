@@ -12,7 +12,6 @@
 #include "ecs/world.h"
 
 
-
 int main() {
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "My Game");
     SetTargetFPS(60);
@@ -29,9 +28,11 @@ int main() {
 
     Texture2D spaceMarineTexture = LoadTexture("assets/space_marine_top_down.png");
     assert(spaceMarineTexture.id != 0 && "spaceMarineTexture failed to load");
+    world.textures["space_marine_top_down"] = &spaceMarineTexture;
 
     Texture2D bulletTexture = LoadTexture("assets/bullet.png");
     assert(bulletTexture.id != 0 && "bullet texture failed to load");
+    world.textures["bullet_texture"] = &bulletTexture;
 
     Entity player = playerFactory(world, {
         .texture = {spaceMarineTexture},

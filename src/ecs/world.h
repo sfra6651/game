@@ -4,6 +4,7 @@
 
 #include <cassert>
 #include <functional>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -14,11 +15,14 @@
 
 struct World {
     Entities entities{};
+
     std::unordered_map<int, Position> positions;
     std::unordered_map<int, Size> sizes;
     std::unordered_map<int, Renderable> renderables;
     std::unordered_map<int, Direction> directions;
     std::unordered_map<int, Speed> speeds;
+
+    std::unordered_map<std::string, Texture2D*> textures;
 
     std::vector<std::function<void(int)>> cleanUps;
 

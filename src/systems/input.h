@@ -35,9 +35,9 @@ struct InputSystem {
         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
             Vector2 mousePos= GetMousePosition();
             Position playerPos = world.positions[e.id];
-            Texture2D bulletTexture = LoadTexture("assets/bullet.png");
+            Texture2D* bulletTexture = world.textures["bullet_texture"];
             Direction dir = calculateDirectionVec(playerPos, { (int)mousePos.x, (int)mousePos.y});
-            spawnProjectile(bulletTexture, playerPos ,{dir.x, dir.y}, {20} );
+            spawnProjectile(*bulletTexture, playerPos ,{dir.x, dir.y}, {20} );
         };
     }
 
