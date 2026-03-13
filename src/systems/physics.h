@@ -5,7 +5,7 @@
 #include <cmath>
 #include <unordered_map>
 
-#include "ecs/entity.h"
+#include "shared/components.h"
 #include "entities/projectile.h"
 #include "ecs/world.h"
 
@@ -27,10 +27,13 @@ struct PhysicsSystem {
             int x_new = pos.x += dir.x * speed.v;
             int y_new = pos.y += dir.y * speed.v;
             Position new_pos{ x_new, y_new};
-            world.positions[e_id] = new_pos;
+
             if (new_pos.x >= WINDOW_WIDTH * 2 || new_pos.y >= WINDOW_HEIGHT) {
                 world.erase(world.entities.list[i]);
+                return;
             };
+            world.positions[e_id] = new_pos;
+
         };
     };
 

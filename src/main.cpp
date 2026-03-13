@@ -2,11 +2,13 @@
 
 #include <cassert>
 #include <functional>
-#include <iostream>
 #include <random>
+#include <vector>
 
-#include "ecs/entity.h"
+#include "shared/components.h"
 #include "entities/player.h"
+#include "shared/protocol.h"
+#include "shared/tcp.h"
 #include "systems/input.h"
 #include "systems/physics.h"
 #include "ecs/world.h"
@@ -15,6 +17,8 @@
 int main() {
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "My Game");
     SetTargetFPS(60);
+
+    TcpClient tcpClient {};
 
     World world{};
     InputSystem inputSystem { world };
@@ -56,6 +60,8 @@ int main() {
        //Entity e = spaceMarineFactory(world, {.texture = spaceMarineTexture, .pos = {distW(rng), distH(rng)}, .v = {distVx(rng), distVy(rng)}});
     };
 
+    tcpClient.connect();
+
     while (!WindowShouldClose()) {
         BeginDrawing();
         ClearBackground(BLACK);
@@ -67,6 +73,8 @@ int main() {
 
         EndDrawing();
     }
+
+    tcpClient.disconnect();
 
     UnloadTexture(spaceMarineTexture);
 

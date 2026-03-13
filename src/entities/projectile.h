@@ -2,7 +2,7 @@
 
 #include "raylib.h"
 
-#include "ecs/entity.h"
+#include "shared/components.h"
 #include "ecs/world.h"
 
 struct ProjectileConfig {

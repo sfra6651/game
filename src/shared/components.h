@@ -6,6 +6,7 @@
 #include <cassert>
 
 #define MAX_ENTITIES 1000
+#define REMOVED_ENTITY -1
 
 struct Position { int x; int y; };
 struct Size { int width; int height; };
@@ -41,6 +42,6 @@ struct Entities {
 
     void remove(int id) {
         freeList.push_back(id);
-        list[id].id = 0;
+        list[id].id = REMOVED_ENTITY;
     };
 };

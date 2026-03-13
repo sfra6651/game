@@ -5,7 +5,7 @@
 #include <cmath>
 #include <unordered_map>
 
-#include "ecs/entity.h"
+#include "shared/components.h"
 #include "entities/projectile.h"
 #include "ecs/world.h"
 
@@ -36,7 +36,7 @@ struct InputSystem {
             Vector2 mousePos= GetMousePosition();
             Position playerPos = world.positions[e.id];
             Texture2D* bulletTexture = world.textures["bullet_texture"];
-            Direction dir = calculateDirectionVec(playerPos, { (int)mousePos.x, (int)mousePos.y});
+            Direction dir = calculateDirectionVec({playerPos.x-32, playerPos.y-32}, { (int)mousePos.x, (int)mousePos.y});
             spawnProjectile(*bulletTexture, playerPos ,{dir.x, dir.y}, {20} );
         };
     }
