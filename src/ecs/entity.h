@@ -10,7 +10,8 @@
 struct Position { int x; int y; };
 struct Size { int width; int height; };
 struct Renderable { Texture2D texture; };
-struct Velocity { int x; int y; };
+struct Direction { float x; float y; };
+struct Speed { int v; };
 
 struct Entity {
     int id;

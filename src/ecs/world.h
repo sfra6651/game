@@ -17,14 +17,20 @@ struct World {
     std::unordered_map<int, Position> positions;
     std::unordered_map<int, Size> sizes;
     std::unordered_map<int, Renderable> renderables;
-    std::unordered_map<int, Velocity> velocities;
+    std::unordered_map<int, Direction> directions;
+    std::unordered_map<int, Speed> speeds;
 
     std::vector<std::function<void(int)>> cleanUps;
 
     std::function<void()> inputSystem;
+    std::function<void()> physicsSystem;
 
     void registerInputSystem(std::function<void()> fn) {
         inputSystem = fn;
+    };
+
+    void registerPhysicsSystem(std::function<void()> fn) {
+        physicsSystem = fn;
     };
 
     template<typename T>
@@ -37,8 +43,7 @@ struct World {
         store[entity.id] = component;
     };
 
-    template<typename T>
-    void erase(Entity entity) {
+    void erase(Entity &entity) {
         for (auto& cleanUp: cleanUps) {
             cleanUp(entity.id);
         };
@@ -69,29 +74,7 @@ struct World {
         };
     };
 
-    void runPhysics(){
-        int count = entities.freeIndex;
-        for (int i = 0; i < count; i++) {
-            int e_id = entities.list[i].id; 
-            if (!velocities.count(e_id)) { 
-                continue;
-            };
-            Velocity v = velocities[e_id];
-            Position pos = positions[e_id];
-            int x_new = pos.x += v.x;
-            int y_new = pos.y += v.y;
-            Position new_pos{ x_new, y_new};
-            if (x_new >= WINDOW_WIDTH || x_new <= 0) {
-                new_pos.x = pos.x; 
-                velocities[e_id].x *= -1; 
-            };
-            if (y_new >= WINDOW_HEIGHT || y_new <= 0) {
-                new_pos.y = pos.y; 
-                velocities[e_id].y *= -1; 
-            };
-            positions[e_id] = new_pos;
-        };
-    };
+ 
 
 
 };

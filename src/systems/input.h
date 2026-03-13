@@ -2,18 +2,53 @@
 
 #include "raylib.h"
 
+#include <cmath>
+#include <unordered_map>
+
 #include "ecs/entity.h"
+#include "entities/projectile.h"
 #include "ecs/world.h"
 
-
-inline void proccessInput(World &w, Entity &e) {
-    if (IsKeyDown(KEY_W)) w.velocities[e.id].y = -4;
-    if (IsKeyDown(KEY_S)) w.velocities[e.id].y = 4;
-    if (IsKeyDown(KEY_A)) w.velocities[e.id].x = -4;
-    if (IsKeyDown(KEY_D)) w.velocities[e.id].x = 4;
-
-    if (IsKeyReleased(KEY_W)) w.velocities[e.id].y = 0;
-    if (IsKeyReleased(KEY_S)) w.velocities[e.id].y = 0;
-    if (IsKeyReleased(KEY_A)) w.velocities[e.id].x = 0;
-    if (IsKeyReleased(KEY_D)) w.velocities[e.id].x = 0;
+inline Direction calculateDirectionVec(Position origin, Position target){
+    float dx = target.x - origin.x;
+    float dy = target.y - origin.y;
+    float len = std::sqrt(dx*dx + dy*dy);
+    return { dx/len, dy/len };
 };
+
+struct InputSystem {
+    World &world;
+
+    void proccessInput(Entity &e) {
+        std::unordered_map<int, Direction> &directions {world.directions};
+
+        if (IsKeyDown(KEY_W)) directions[e.id].y = -1.f;
+        if (IsKeyDown(KEY_S)) directions[e.id].y = 1.f;
+        if (IsKeyDown(KEY_A)) directions[e.id].x = -1.f;
+        if (IsKeyDown(KEY_D)) directions[e.id].x = 1.f;
+    
+        if (IsKeyReleased(KEY_W)) directions[e.id].y = 0;
+        if (IsKeyReleased(KEY_S)) directions[e.id].y = 0;
+        if (IsKeyReleased(KEY_A)) directions[e.id].x = 0;
+        if (IsKeyReleased(KEY_D)) directions[e.id].x = 0;
+
+        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+            Vector2 mousePos= GetMousePosition();
+            Position playerPos = world.positions[e.id];
+            Texture2D bulletTexture = LoadTexture("assets/bullet.png");
+            Direction dir = calculateDirectionVec(playerPos, { (int)mousePos.x, (int)mousePos.y});
+            spawnProjectile(bulletTexture, playerPos ,{dir.x, dir.y}, {20} );
+        };
+    }
+
+    void spawnProjectile(Texture2D texture, Position pos, Direction dir, Speed s) {
+        Entity projectile = projectileFactory(world, {
+            .texture = texture,
+            .pos = pos,
+            .direction = dir,
+            .speed = s 
+        });
+    }
+};
+
+

@@ -25,3 +25,4 @@ add_executable(game
 
 target_include_directories(game PRIVATE src)
 target_link_libraries(game PRIVATE raylib)
+target_compile_definitions(game PRIVATE $<$<CONFIG:Debug>:DEBUG>)

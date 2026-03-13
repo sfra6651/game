@@ -1,4 +1,4 @@
-#define pragma once
+#pragma once
 
 #include "raylib.h"
 
@@ -6,17 +6,23 @@
 #include "ecs/world.h"
 
 struct ProjectileConfig {
-    Texture2D texture{};
-    Position pos{}; 
-    Velocity velocity{};
-    Entity owner{};
+    Texture2D &texture;
+    Position pos = {(int)WINDOW_WIDTH/2, (int)WINDOW_HEIGHT/2};
+    Size size = {16, 8};
+    Direction direction = { 0, 0 };
+    Speed speed = { 0 };
+
 };
 
-inline Entity projectileFactory(ProjectileConfig config, World &world) {
-    Entity projectile = world.entities.create();
-    world.attach(projectile, world.renderables, Renderable {config.texture});
-    world.attach(projectile, world.velocities, Velocity {config.velocity.x, config.velocity.y});
-    world.attach(projectile, world.positions, Position {config.pos.x, config.pos.y});
-
-    return projectile;
+inline Entity projectileFactory (
+    World &world,
+    ProjectileConfig config)
+{
+    Entity player = world.entities.create();
+    world.attach(player, world.positions, config.pos);
+    world.attach(player, world.renderables, Renderable{config.texture});
+    world.attach(player, world.sizes, config.size);
+    world.attach(player, world.directions, config.direction);
+    world.attach(player, world.speeds, config.speed);
+    return player;
 };
