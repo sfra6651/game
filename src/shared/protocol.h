@@ -30,10 +30,11 @@ struct EntitySnapshot {
 
 struct WorldSnap {
     std::vector<Entity> entities;
-    std::unordered_map<int, Position> positions;
-    std::unordered_map<int, Size> sizes;
-    std::unordered_map<int, Direction> directions;
-    std::unordered_map<int, Speed> speeds;
+    ComponentStore<Position> positions;
+    ComponentStore<Size> sizes;
+    ComponentStore<Renderable> renderables;
+    ComponentStore<Direction> directions;
+    ComponentStore<Speed> speeds;
 
     void clear(){
         entities.clear();
@@ -66,25 +67,25 @@ struct DebugProtocol {
     void createEntitySnaps(World &world)
     {
         entitySnaps.clear();
-        for (int i = 0; i < world.entities.freeIndex; i++) {
+        for (int i = 0; i < world.entities.count; i++) {
             EntitySnapshot snap {}; 
             int id = world.entities.list[i].id;
             snap.id = id;
-            if (world.positions.count(id)) {
+            if (world.positions.has(id)) {
                 snap.components |= HAS_POSITION;
-                snap.position = world.positions[id];
+                snap.position = world.positions.get(id);
             };
-            if (world.directions.count(id)) {
+            if (world.directions.has(id)) {
                 snap.components |= HAS_DIRECTION;
-                snap.direction = world.directions[id];
+                snap.direction = world.directions.get(id);
             };
-            if (world.speeds.count(id)) {
+            if (world.speeds.has(id)) {
                 snap.components |= HAS_SPEED;
-                snap.speed = world.speeds[id];
+                snap.speed = world.speeds.get(id);
             };
-            if (world.sizes.count(id)) {
+            if (world.sizes.has(id)) {
                 snap.components |= HAS_SIZE;
-                snap.size = world.sizes[id];
+                snap.size = world.sizes.get(id);
             };
             entitySnaps.push_back(snap);
         };
@@ -93,18 +94,18 @@ struct DebugProtocol {
     void parseEntitySnaps(WorldSnap &worldSnap)
     {
         worldSnap.clear();
-        for (const auto& entitySnap : entitySnaps) {
+        for (auto& entitySnap : entitySnaps) {
             if (entitySnap.components & HAS_POSITION) {
-                worldSnap.positions[entitySnap.id] = entitySnap.position;
+                worldSnap.positions.add(entitySnap.id, entitySnap.position);
             };
             if (entitySnap.components & HAS_DIRECTION) {
-                worldSnap.directions[entitySnap.id] = entitySnap.direction;
+                worldSnap.directions.add(entitySnap.id, entitySnap.direction);
             };
             if (entitySnap.components & HAS_SPEED) {
-                worldSnap.speeds[entitySnap.id] = entitySnap.speed;
+                worldSnap.speeds.add(entitySnap.id, entitySnap.speed);
             };
             if (entitySnap.components & HAS_SIZE) {
-                worldSnap.sizes[entitySnap.id] = entitySnap.size;
+                worldSnap.sizes.add(entitySnap.id, entitySnap.size);
             };
             worldSnap.entities.push_back({.id = entitySnap.id});
         };

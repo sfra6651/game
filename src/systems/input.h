@@ -19,24 +19,23 @@ inline Direction calculateDirectionVec(Position origin, Position target){
 struct InputSystem {
     World &world;
 
-    void proccessInput(Entity &e) {
-        std::unordered_map<int, Direction> &directions {world.directions};
+    void proccessInput(Entity e) {
 
-        if (IsKeyDown(KEY_W)) directions[e.id].y = -1.f;
-        if (IsKeyDown(KEY_S)) directions[e.id].y = 1.f;
-        if (IsKeyDown(KEY_A)) directions[e.id].x = -1.f;
-        if (IsKeyDown(KEY_D)) directions[e.id].x = 1.f;
+        if (IsKeyDown(KEY_W)) world.directions.get(e.id).y = -1.f;
+        if (IsKeyDown(KEY_S)) world.directions.get(e.id).y = 1.f;
+        if (IsKeyDown(KEY_A)) world.directions.get(e.id).x = -1.f;
+        if (IsKeyDown(KEY_D)) world.directions.get(e.id).x = 1.f;
     
-        if (IsKeyReleased(KEY_W)) directions[e.id].y = 0;
-        if (IsKeyReleased(KEY_S)) directions[e.id].y = 0;
-        if (IsKeyReleased(KEY_A)) directions[e.id].x = 0;
-        if (IsKeyReleased(KEY_D)) directions[e.id].x = 0;
+        if (IsKeyReleased(KEY_W)) world.directions.get(e.id).y = 0;
+        if (IsKeyReleased(KEY_S)) world.directions.get(e.id).y = 0;
+        if (IsKeyReleased(KEY_A)) world.directions.get(e.id).x = 0;
+        if (IsKeyReleased(KEY_D)) world.directions.get(e.id).x = 0;
 
         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
             Vector2 mousePos= GetMousePosition();
-            Position playerPos = world.positions[e.id];
+            Position playerPos = world.positions.get(e.id);
             Texture2D* bulletTexture = world.textures["bullet_texture"];
-            Direction dir = calculateDirectionVec({playerPos.x-32, playerPos.y-32}, { (int)mousePos.x, (int)mousePos.y});
+            Direction dir = calculateDirectionVec({playerPos.x-32, playerPos.y+32}, { (int)mousePos.x, (int)mousePos.y});
             spawnProjectile(*bulletTexture, playerPos ,{dir.x, dir.y}, {20} );
         };
     }

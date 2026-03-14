@@ -12,6 +12,7 @@
 #include "systems/input.h"
 #include "systems/physics.h"
 #include "ecs/world.h"
+#include "systems/renderer.h"
 
 
 int main() {
@@ -23,6 +24,7 @@ int main() {
     World world{};
     InputSystem inputSystem { world };
     PhysicsSystem physicsSystem { world };
+    RenderingSystem renderingSystem { world };
 
     world.registerCleanUp(world.renderables);
     world.registerCleanUp(world.positions);
@@ -50,6 +52,10 @@ int main() {
     world.registerPhysicsSystem([&physicsSystem]() {
         physicsSystem.proccessPhysics();
     });
+    world.registerRenderSystem([&renderingSystem]() {
+        renderingSystem.renderWorld();
+    });
+
     std::mt19937 rng{std::random_device{}()};
     std::uniform_int_distribution<int> distW(0, WINDOW_WIDTH - 64);
     std::uniform_int_distribution<int> distH(0, WINDOW_HEIGHT - 64);
@@ -67,9 +73,9 @@ int main() {
         BeginDrawing();
         ClearBackground(BLACK);
         // draw stuff here
-        world.drawRenderables();
-        world.processInput();
         world.processPhysics();
+        world.processInput();
+        world.processRenders();
 
         if(tcpClient.isConnected()) {
             protocol.instruction = PROCCESS_NEXT_FRAME;

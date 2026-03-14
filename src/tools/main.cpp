@@ -27,15 +27,16 @@ inline void EntitiesTable(WorldSnap &worldSnap) {
         ImGui::TableSetupColumn("direction");
         ImGui::TableSetupColumn("speed");
         ImGui::TableSetupColumn("size");
+        ImGui::TableHeadersRow();
 
         for (auto &entity: worldSnap.entities) {
             int id = entity.id;
             ImGui::TableNextRow();
             ImGui::TableNextColumn(); ImGui::Text("%d", id);
-            ImGui::TableNextColumn(); ImGui::Text("%d, %d", worldSnap.positions[id].x, worldSnap.positions[id].y);
-            ImGui::TableNextColumn(); ImGui::Text("%f, %f", worldSnap.directions[id].x, worldSnap.directions[id].y);
-            ImGui::TableNextColumn(); ImGui::Text("%d", worldSnap.speeds[id].v);
-            ImGui::TableNextColumn(); ImGui::Text("%d, %d", worldSnap.sizes[id].width, worldSnap.sizes[id].height);
+            ImGui::TableNextColumn(); ImGui::Text("%d, %d", worldSnap.positions.get(id).x, worldSnap.positions.get(id).y);
+            ImGui::TableNextColumn(); ImGui::Text("%f, %f", worldSnap.directions.get(id).x, worldSnap.directions.get(id).y);
+            ImGui::TableNextColumn(); ImGui::Text("%d", worldSnap.speeds.get(id).v);
+            ImGui::TableNextColumn(); ImGui::Text("%d, %d", worldSnap.sizes.get(id).width, worldSnap.sizes.get(id).height);
         };
 
         ImGui::EndTable();

@@ -14,15 +14,15 @@ struct PhysicsSystem {
     World &world;
 
    void proccessPhysics(){
-        int count = world.entities.freeIndex;
+        int count = world.entities.count;
         for (int i = 0; i < count; i++) {
             int e_id = world.entities.list[i].id; 
-            if (!world.directions.count(e_id)) { 
+            if (!world.directions.has(e_id)) { 
                 continue;
             };
-            Direction dir = world.directions[e_id];
-            Position pos = world.positions[e_id];
-            Speed speed = world.speeds[e_id];
+            Direction dir = world.directions.get(e_id);
+            Position pos = world.positions.get(e_id);
+            Speed speed = world.speeds.get(e_id);
 
             int x_new = pos.x += dir.x * speed.v;
             int y_new = pos.y += dir.y * speed.v;
@@ -32,7 +32,8 @@ struct PhysicsSystem {
                 world.erase(world.entities.list[i]);
                 return;
             };
-            world.positions[e_id] = new_pos;
+            world.positions.get(e_id) = new_pos;
+            
 
         };
     };
