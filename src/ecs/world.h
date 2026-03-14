@@ -6,8 +6,10 @@
 #include <functional>
 #include <string>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
+#include "resources/textureManager.h"
 #include "shared/components.h"
 
 #define WINDOW_WIDTH 1920
@@ -22,7 +24,7 @@ struct World {
     ComponentStore<Direction> directions;
     ComponentStore<Speed> speeds;
 
-    std::unordered_map<std::string, Texture2D*> textures;
+    TextureManager textureManager {};
 
     std::vector<std::function<void(int)>> cleanUps;
 
@@ -31,7 +33,7 @@ struct World {
     std::function<void()> processRenders;
 
     void registerInputSystem(std::function<void()> fn) {
-        processInput = fn;
+        processInput = std::move(fn);
     };
 
     void registerPhysicsSystem(std::function<void()> fn) {

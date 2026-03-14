@@ -8,7 +8,7 @@
 #include <cassert>
 
 #define MAX_ENTITIES 1000
-#define REMOVED_ENTITY_ID -1
+#define REMOVED_ENTITY_ID (-1)
 
 struct Position { int x; int y; };
 struct Size { int width; int height; };

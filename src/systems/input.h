@@ -34,19 +34,15 @@ struct InputSystem {
         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
             Vector2 mousePos= GetMousePosition();
             Position playerPos = world.positions.get(e.id);
-            Texture2D* bulletTexture = world.textures["bullet_texture"];
+            Texture2D bulletTexture = world.textureManager.get("bullet.png");
             Direction dir = calculateDirectionVec({playerPos.x-32, playerPos.y+32}, { (int)mousePos.x, (int)mousePos.y});
-            spawnProjectile(*bulletTexture, playerPos ,{dir.x, dir.y}, {20} );
+            projectileFactory(world, {
+             .texture = bulletTexture,
+             .pos = playerPos,
+             .direction = dir,
+             .speed = { 20 }
+         });
         };
-    }
-
-    void spawnProjectile(Texture2D texture, Position pos, Direction dir, Speed s) {
-        Entity projectile = projectileFactory(world, {
-            .texture = texture,
-            .pos = pos,
-            .direction = dir,
-            .speed = s 
-        });
     }
 };
 

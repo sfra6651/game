@@ -12,6 +12,7 @@
 #include "systems/input.h"
 #include "systems/physics.h"
 #include "ecs/world.h"
+#include "resources/textureManager.h"
 #include "systems/renderer.h"
 
 
@@ -32,16 +33,11 @@ int main() {
     world.registerCleanUp(world.directions);
     world.registerCleanUp(world.speeds);
 
-    Texture2D spaceMarineTexture = LoadTexture("assets/space_marine_top_down.png");
-    assert(spaceMarineTexture.id != 0 && "spaceMarineTexture failed to load");
-    world.textures["space_marine_top_down"] = &spaceMarineTexture;
 
-    Texture2D bulletTexture = LoadTexture("assets/bullet.png");
-    assert(bulletTexture.id != 0 && "bullet texture failed to load");
-    world.textures["bullet_texture"] = &bulletTexture;
+    world.textureManager.load();
 
     Entity player = playerFactory(world, {
-        .texture = {spaceMarineTexture},
+        .texture = {world.textureManager.get("space_marine_top_down.png")},
         .pos = {300, 400},
         .speed = { 5 }
     });
@@ -56,18 +52,9 @@ int main() {
         renderingSystem.renderWorld();
     });
 
-    std::mt19937 rng{std::random_device{}()};
-    std::uniform_int_distribution<int> distW(0, WINDOW_WIDTH - 64);
-    std::uniform_int_distribution<int> distH(0, WINDOW_HEIGHT - 64);
-    std::uniform_int_distribution<int> distVx(-10, 10);
-    std::uniform_int_distribution<int> distVy(-10, 10);
-
-    for (int i = 0; i < 999; i++) {
-       //Entity e = spaceMarineFactory(world, {.texture = spaceMarineTexture, .pos = {distW(rng), distH(rng)}, .v = {distVx(rng), distVy(rng)}});
-    };
-
     tcpClient.connect();
     DebugProtocol protocol{};
+
 
     while (!WindowShouldClose()) { 
         BeginDrawing();
@@ -83,13 +70,10 @@ int main() {
             protocol.sendTo(tcpClient);
         };
 
-
         EndDrawing();
     }
 
     tcpClient.disconnect();
-
-    UnloadTexture(spaceMarineTexture);
 
     CloseWindow();
     return 0;
