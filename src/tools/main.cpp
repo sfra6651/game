@@ -34,7 +34,7 @@ inline void EntitiesTable(WorldSnap &worldSnap) {
             ImGui::TableNextRow();
             ImGui::TableNextColumn(); ImGui::Text("%d", id);
             ImGui::TableNextColumn(); ImGui::Text("%d, %d", worldSnap.positions.get(id).x, worldSnap.positions.get(id).y);
-            ImGui::TableNextColumn(); ImGui::Text("%f, %f", worldSnap.directions.get(id).x, worldSnap.directions.get(id).y);
+            ImGui::TableNextColumn(); ImGui::Text("%f.2, %f.2", worldSnap.directions.get(id).x, worldSnap.directions.get(id).y);
             ImGui::TableNextColumn(); ImGui::Text("%d", worldSnap.speeds.get(id).v);
             ImGui::TableNextColumn(); ImGui::Text("%d, %d", worldSnap.sizes.get(id).width, worldSnap.sizes.get(id).height);
         };
@@ -79,7 +79,6 @@ int main() {
     server.start();
     std::thread revcThread([&]() {
         while (server.running_) {
-            DebugProtocol protocol{};
             if (protocol.recvFrom(server)) {
                 std::lock_guard<std::mutex> lock(contentMutex);
                 protocol.parseEntitySnaps(worldSnap);

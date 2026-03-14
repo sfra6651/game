@@ -44,7 +44,7 @@ struct World {
 
     template<typename T>
     void registerCleanUp(ComponentStore<T> &store){
-        cleanUps.push_back([&store] (int id) { store.remove(id); });
+        cleanUps.push_back([&store] (int id) { if (store.has(id)) store.remove(id); });
     }
 
     template<typename T>

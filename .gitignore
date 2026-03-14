@@ -1,5 +1,7 @@
 /build
+/cmake-build-*/
 .idea/
 .cache/
 .clangd
 .DS_Store
+imgui.ini

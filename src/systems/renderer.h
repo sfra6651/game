@@ -18,6 +18,7 @@ struct RenderingSystem{
         int count = entities.count;
         for (int i = 0; i < count; i++) {
             int e_id = entities.list[i].id;
+            if  (e_id == REMOVED_ENTITY_ID) { continue; };
             if (!world.positions.has(e_id) || !world.renderables.has(e_id) || !world.sizes.has(e_id)) 
             {
                 continue;
