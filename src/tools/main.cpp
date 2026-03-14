@@ -3,6 +3,7 @@
 #include "imgui_impl_opengl3.h"
 
 #include <GLFW/glfw3.h>
+#include <mutex>
 
 #include "shared/protocol.h"
 #include "shared/tcp.h"
@@ -18,6 +19,28 @@ static void drawConnectionStatus() {
     }
     ImGui::End();
 }
+
+inline void drawEntities(WorldSnap &worldSnap) {
+    if (ImGui::BeginTable("EntityTable" , 5, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg)) {
+        ImGui::TableSetupColumn("id");
+        ImGui::TableSetupColumn("position");
+        ImGui::TableSetupColumn("direction");
+        ImGui::TableSetupColumn("speed");
+        ImGui::TableSetupColumn("size");
+
+        for (auto &entity: worldSnap.entities) {
+            int id = entity.id;
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn(); ImGui::Text("%d", id);
+            ImGui::TableNextColumn(); ImGui::Text("%d, %d", worldSnap.positions[id].x, worldSnap.positions[id].y);
+            ImGui::TableNextColumn(); ImGui::Text("%f.2, %f.2", worldSnap.directions[id].x, worldSnap.directions[id].y);
+            ImGui::TableNextColumn(); ImGui::Text("%d", worldSnap.speeds[id].v);
+            ImGui::TableNextColumn(); ImGui::Text("%d, %d", worldSnap.sizes[id].width, worldSnap.sizes[id].height);
+        };
+
+        ImGui::EndTable();
+    };
+};
 
 int main() {
     if (!glfwInit()) return 1;
@@ -47,7 +70,21 @@ int main() {
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 330");
 
+    DebugProtocol protocol{};
+    WorldSnap worldSnap{};
+
+    static std::mutex contentMutex;
+
     server.start();
+    std::thread revcThread([&]() {
+        while (server.running_) {
+            DebugProtocol protocol{};
+            if (protocol.recvFrom(server)) {
+                std::lock_guard<std::mutex> lock(contentMutex);
+                protocol.parseEntitySnaps(worldSnap);
+            };
+        };
+    });
 
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
@@ -59,6 +96,7 @@ int main() {
         ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
 
         drawConnectionStatus();
+        drawEntities(worldSnap);
 
         ImGui::Render();
         int displayW, displayH;

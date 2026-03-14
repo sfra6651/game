@@ -26,15 +26,15 @@ struct World {
 
     std::vector<std::function<void(int)>> cleanUps;
 
-    std::function<void()> inputSystem;
-    std::function<void()> physicsSystem;
+    std::function<void()> processInput;
+    std::function<void()> processPhysics;
 
     void registerInputSystem(std::function<void()> fn) {
-        inputSystem = fn;
+        processInput = fn;
     };
 
     void registerPhysicsSystem(std::function<void()> fn) {
-        physicsSystem = fn;
+        processPhysics = fn;
     };
 
     template<typename T>

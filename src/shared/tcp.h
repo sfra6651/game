@@ -49,7 +49,7 @@ struct TcpServer {
             while (running_) {
                 fd_set fds;
                 FD_ZERO(&fds);
-                FD_SET(listenFd_, &fds);
+    FD_SET(listenFd_, &fds);
                 timeval tv{0, 200000}; // 200ms timeout
                 int ret = select(listenFd_ + 1, &fds, nullptr, nullptr, &tv);
                 if (ret > 0) {

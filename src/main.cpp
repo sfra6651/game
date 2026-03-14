@@ -61,14 +61,21 @@ int main() {
     };
 
     tcpClient.connect();
+    DebugProtocol protocol{};
 
-    while (!WindowShouldClose()) {
+    while (!WindowShouldClose()) { 
         BeginDrawing();
         ClearBackground(BLACK);
         // draw stuff here
         world.drawRenderables();
-        world.inputSystem();
-        world.physicsSystem();
+        world.processInput();
+        world.processPhysics();
+
+        if(tcpClient.isConnected()) {
+            protocol.instruction = PROCCESS_NEXT_FRAME;
+            protocol.createEntitySnaps(world);
+            protocol.sendTo(tcpClient);
+        };
 
 
         EndDrawing();
