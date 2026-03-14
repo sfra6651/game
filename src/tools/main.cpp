@@ -20,7 +20,7 @@ static void drawConnectionStatus() {
     ImGui::End();
 }
 
-inline void drawEntities(WorldSnap &worldSnap) {
+inline void EntitiesTable(WorldSnap &worldSnap) {
     if (ImGui::BeginTable("EntityTable" , 5, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg)) {
         ImGui::TableSetupColumn("id");
         ImGui::TableSetupColumn("position");
@@ -33,7 +33,7 @@ inline void drawEntities(WorldSnap &worldSnap) {
             ImGui::TableNextRow();
             ImGui::TableNextColumn(); ImGui::Text("%d", id);
             ImGui::TableNextColumn(); ImGui::Text("%d, %d", worldSnap.positions[id].x, worldSnap.positions[id].y);
-            ImGui::TableNextColumn(); ImGui::Text("%f.2, %f.2", worldSnap.directions[id].x, worldSnap.directions[id].y);
+            ImGui::TableNextColumn(); ImGui::Text("%f, %f", worldSnap.directions[id].x, worldSnap.directions[id].y);
             ImGui::TableNextColumn(); ImGui::Text("%d", worldSnap.speeds[id].v);
             ImGui::TableNextColumn(); ImGui::Text("%d, %d", worldSnap.sizes[id].width, worldSnap.sizes[id].height);
         };
@@ -96,7 +96,9 @@ int main() {
         ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
 
         drawConnectionStatus();
-        drawEntities(worldSnap);
+
+        std::lock_guard<std::mutex> lock(contentMutex);
+        EntitiesTable(worldSnap);
 
         ImGui::Render();
         int displayW, displayH;
