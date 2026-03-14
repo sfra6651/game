@@ -48,7 +48,6 @@ target_link_libraries(imgui_lib PUBLIC glfw OpenGL::GL)
 # Game
 add_executable(game
     src/main.cpp
-        src/resources/textureManager.h
 )
 target_include_directories(game PRIVATE src)
 target_link_libraries(game PRIVATE raylib)
