@@ -25,8 +25,8 @@ struct QuadTree {
 
       void subdivide() {
           if (subdivided) return;
-          float hw = bounds.width / 2;
-          float hh = bounds.height / 2;
+          const float hw = bounds.width / 2;
+          const float hh = bounds.height / 2;
           children[0] = std::make_unique<QuadTree>(Rectangle{bounds.x,      bounds.y,      hw, hh}, maxEntities, maxDepth, depth + 1);
           children[1] = std::make_unique<QuadTree>(Rectangle{bounds.x + hw, bounds.y,      hw, hh}, maxEntities, maxDepth, depth + 1);
           children[2] = std::make_unique<QuadTree>(Rectangle{bounds.x,      bounds.y + hh, hw, hh}, maxEntities, maxDepth, depth + 1);
@@ -46,19 +46,19 @@ struct QuadTree {
 
           // Re-insert existing entities into children
           for (auto& [id, r] : entities) {
-              for (auto& child : children) {
+              for (const auto& child : children) {
                   child->insert(id, r);
               }
           }
           entities.clear();
 
           // Insert the new entity into children
-          for (auto& child : children) {
+          for (const auto& child : children) {
               child->insert(entityId, rect);
           }
       }
 
-      void query(Rectangle area, std::vector<int>& found) {
+      void query(const Rectangle area, std::vector<int>& found) {
           if (!CheckCollisionRecs(bounds, area)) return;
 
           for (auto& [id, r] : entities) {
@@ -66,7 +66,7 @@ struct QuadTree {
           }
 
           if (subdivided) {
-              for (auto& child : children) {
+              for (const auto& child : children) {
                   child->query(area, found);
               }
           }
@@ -96,7 +96,7 @@ struct CollisionSystem {
         removals.clear();
         QuadTree tree{Rectangle{0, 0, WINDOW_WIDTH, WINDOW_HEIGHT}};
         for (int i = 0; world.entities.count > i; i++) {
-            int eId = world.entities.list[i].id;
+            const int eId = world.entities.list[i].id;
             if (eId == REMOVED_ENTITY_ID) { continue; }
             if (!collidable(eId, world)) {
                 continue;
@@ -110,7 +110,7 @@ struct CollisionSystem {
 
         // 2. For each entity, query the tree instead of all entities
         for (int i = 0; i < world.entities.count; i++) {
-            int eId = world.entities.list[i].id;
+            const int eId = world.entities.list[i].id;
             if (eId == REMOVED_ENTITY_ID) continue;
             if (!collidable(eId, world)) continue;
 
@@ -122,7 +122,7 @@ struct CollisionSystem {
             std::vector<int> nearby{};
             tree.query(rect, nearby);   // only entities in same region
 
-            for (int other_id : nearby) {
+            for (const int other_id : nearby) {
                 if (other_id == eId) continue;
                 if (world.owners.has(other_id)) continue;
 
@@ -138,7 +138,7 @@ struct CollisionSystem {
             }
         }
 
-        for (auto& id : removals) {
+        for (const auto& id : removals) {
             world.erase({id});
         }
     }
