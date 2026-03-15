@@ -13,7 +13,7 @@ struct EnemyConfig {
     Speed speed = { 0 };
 };
 
-inline Entity enemyFacotry(
+inline Entity enemyFactory(
     World &world,
     EnemyConfig config)
 {

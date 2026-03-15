@@ -23,6 +23,9 @@ struct World {
     ComponentStore<Renderable> renderables;
     ComponentStore<Direction> directions;
     ComponentStore<Speed> speeds;
+    ComponentStore<Damage> damages;
+    ComponentStore<Health> healths;
+    ComponentStore<Owner> owners;
 
     TextureManager textureManager {};
 

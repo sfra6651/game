@@ -12,6 +12,7 @@
 #include "systems/input.h"
 #include "systems/physics.h"
 #include "ecs/world.h"
+#include "entities/enemy.h"
 #include "resources/textureManager.h"
 #include "systems/renderer.h"
 
@@ -39,7 +40,14 @@ int main() {
     Entity player = playerFactory(world, {
         .texture = {world.textureManager.get("space_marine_top_down.png")},
         .pos = {300, 400},
-        .speed = { 5 }
+        .size = { 64, 64 },
+        .speed = { 5 },
+    });
+
+    Entity ork = enemyFactory(world, {
+        .texture = {world.textureManager.get("ork_down.png")},
+        .pos = { 800, 800},
+        .speed = { 0 }
     });
 
     world.registerInputSystem([&player, &inputSystem] () {

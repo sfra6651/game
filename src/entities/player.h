@@ -11,6 +11,7 @@ struct PlayerConfig {
     Size size = { 64, 64 };
     Direction direction = { 0.f, 0.f };
     Speed speed = { 0 };
+    Health health = { 100 };
 
 };
 

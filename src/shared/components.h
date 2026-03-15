@@ -15,6 +15,9 @@ struct Size { int width; int height; };
 struct Renderable { Texture2D texture; };
 struct Direction { float x; float y; };
 struct Speed { int v; };
+struct Damage { int v; };
+struct Health { int v; };
+struct Owner { int id; };
 
 struct Entity {
     int id;

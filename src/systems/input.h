@@ -40,7 +40,8 @@ struct InputSystem {
              .texture = bulletTexture,
              .pos = playerPos,
              .direction = dir,
-             .speed = { 20 }
+             .speed = { 20 },
+             .damage = { 10 },
          });
         };
     }

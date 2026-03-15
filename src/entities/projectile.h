@@ -7,11 +7,12 @@
 
 struct ProjectileConfig {
     Texture2D &texture;
+    Owner owner;
     Position pos = {(int)WINDOW_WIDTH/2, (int)WINDOW_HEIGHT/2};
     Size size = {16, 8};
     Direction direction = { 0, 0 };
     Speed speed = { 0 };
-
+    Damage damage = { 10 };
 };
 
 inline Entity projectileFactory (
@@ -19,10 +20,13 @@ inline Entity projectileFactory (
     ProjectileConfig config)
 {
     Entity projectile = world.entities.create();
+
+    world.attach(projectile, world.owners, config.owner);
     world.attach(projectile, world.positions, config.pos);
     world.attach(projectile, world.renderables, Renderable{config.texture});
     world.attach(projectile, world.sizes, config.size);
     world.attach(projectile, world.directions, config.direction);
     world.attach(projectile, world.speeds, config.speed);
+    world.attach(projectile, world.damages, config.damage);
     return projectile;
 };
