@@ -38,12 +38,13 @@ struct InputSystem {
             Direction dir = calculateDirectionVec({playerPos.x-32, playerPos.y+32}, { (int)mousePos.x, (int)mousePos.y});
             projectileFactory(world, {
              .texture = bulletTexture,
+             .owner = { e.id },
              .pos = playerPos,
              .direction = dir,
-             .speed = { 20 },
+             .speed = { 10 },
              .damage = { 10 },
          });
-        };
+        }
     }
 };
 

@@ -9,6 +9,7 @@
 #include "entities/player.h"
 #include "shared/protocol.h"
 #include "shared/tcp.h"
+#include "systems/collision.h"
 #include "systems/input.h"
 #include "systems/physics.h"
 #include "ecs/world.h"
@@ -27,12 +28,17 @@ int main() {
     InputSystem inputSystem { world };
     PhysicsSystem physicsSystem { world };
     RenderingSystem renderingSystem { world };
+    CollisionSystem collisionSystem { world };
 
     world.registerCleanUp(world.renderables);
     world.registerCleanUp(world.positions);
     world.registerCleanUp(world.sizes);
     world.registerCleanUp(world.directions);
     world.registerCleanUp(world.speeds);
+    world.registerCleanUp(world.damages);
+    world.registerCleanUp(world.owners);
+    world.registerCleanUp(world.healths);
+
 
 
     world.textureManager.load();
@@ -59,6 +65,9 @@ int main() {
     world.registerRenderSystem([&renderingSystem]() {
         renderingSystem.renderWorld();
     });
+    world.registerCollisionSystem([&collisionSystem]() {
+        collisionSystem.processCollisions();
+    });
 
     tcpClient.connect();
     DebugProtocol protocol{};
@@ -67,9 +76,11 @@ int main() {
     while (!WindowShouldClose()) { 
         BeginDrawing();
         ClearBackground(BLACK);
+
         // draw stuff here
-        world.processPhysics();
         world.processInput();
+        world.processPhysics();
+        world.processCollisions();
         world.processRenders();
 
         if(tcpClient.isConnected()) {

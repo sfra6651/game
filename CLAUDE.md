@@ -1,6 +1,6 @@
-# Roguelike Game
+# Action RPG
 
-2D tile-based roguelike built with C++17 and raylib.
+2D action RPG built with C++17 and raylib.
 
 ## Learning Project
 
@@ -29,5 +29,5 @@ src/
 - C++17, compiled with CMake 3.20+
 - Header includes use path relative to `src/` (e.g. `#include "renderer/renderer.h"`)
 - Private member variables use trailing underscore (`tileWidth_`)
-- Grid coordinates are integer tile positions; pixel conversion happens inside the renderer
+- Real-time movement with continuous (non-tile-based) positioning
 - New `.cpp` files must be added to the `add_executable` list in `CMakeLists.txt`

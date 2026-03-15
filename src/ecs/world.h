@@ -18,14 +18,14 @@
 struct World {
     Entities entities{};
 
-    ComponentStore<Position> positions;
-    ComponentStore<Size> sizes;
-    ComponentStore<Renderable> renderables;
-    ComponentStore<Direction> directions;
-    ComponentStore<Speed> speeds;
     ComponentStore<Damage> damages;
+    ComponentStore<Direction> directions;
     ComponentStore<Health> healths;
+    ComponentStore<Position> positions;
     ComponentStore<Owner> owners;
+    ComponentStore<Renderable> renderables;
+    ComponentStore<Size> sizes;
+    ComponentStore<Speed> speeds;
 
     TextureManager textureManager {};
 
@@ -34,18 +34,23 @@ struct World {
     std::function<void()> processInput;
     std::function<void()> processPhysics;
     std::function<void()> processRenders;
+    std::function<void()> processCollisions;
 
     void registerInputSystem(std::function<void()> fn) {
         processInput = std::move(fn);
-    };
+    }
 
     void registerPhysicsSystem(std::function<void()> fn) {
         processPhysics = fn;
-    };
+    }
 
     void registerRenderSystem(std::function<void()> fn) {
         processRenders = fn;
-    };
+    }
+
+    void registerCollisionSystem(std::function<void()> fn) {
+        processCollisions = fn;
+    }
 
     template<typename T>
     void registerCleanUp(ComponentStore<T> &store){
@@ -55,12 +60,12 @@ struct World {
     template<typename T>
     void attach(Entity entity, ComponentStore<T> &store, T component){
         store.add(entity.id, component);
-    };
+    }
 
     void erase(Entity entity) {
         for (auto& cleanUp: cleanUps) {
             cleanUp(entity.id);
         };
         entities.remove(entity.id);
-    };
+    }
 };
