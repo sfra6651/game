@@ -11,6 +11,7 @@ struct EnemyConfig {
     Size size = { 64, 64 };
     Direction direction = { 0.f, 0.f };
     Speed speed = { 0 };
+    Health health = { 100 };
 };
 
 inline Entity enemyFactory(
@@ -23,5 +24,6 @@ inline Entity enemyFactory(
     world.attach(enemy, world.sizes, config.size);
     world.attach(enemy, world.directions, config.direction);
     world.attach(enemy, world.speeds, config.speed);
+    world.attach(enemy, world.healths, config.health);
     return enemy;
 };

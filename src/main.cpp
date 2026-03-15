@@ -46,7 +46,6 @@ int main() {
     Entity player = playerFactory(world, {
         .texture = {world.textureManager.get("space_marine_top_down.png")},
         .pos = {300, 400},
-        .size = { 64, 64 },
         .speed = { 5 },
     });
 
