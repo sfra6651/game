@@ -6,8 +6,10 @@
 
 inline bool hasPysics(int id, World& world) {
     return world.directions.has(id)
-                && world.renderables.has(id)
-                && world.sizes.has(id)
                 && world.positions.has(id)
                 && world.speeds.has(id);
+};
+
+inline bool collidable(int id, World& world) {
+    return world.positions.has(id) && world.sizes.has(id);
 };

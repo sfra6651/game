@@ -64,7 +64,7 @@ int main() {
         inputSystem.processInput(player);
     });
     world.registerPhysicsSystem([&physicsSystem]() {
-        physicsSystem.processPysics();
+        physicsSystem.processPhysics();
     });
     world.registerAnimationSystem([&animationSystem]() {
         animationSystem.processAnimations();

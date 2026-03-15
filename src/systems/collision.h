@@ -5,61 +5,173 @@
 #include "iostream"
 
 #include "ecs/world.h"
+#include "shared/componentGroups.h"
+
+struct QuadTree {
+      Rectangle bounds;
+      std::vector<std::pair<int, Rectangle>> entities;
+      std::unique_ptr<QuadTree> children[4];
+      int maxEntities = 8;
+      int maxDepth = 5;
+      int depth = 0;
+      bool subdivided = false;
+
+      QuadTree(Rectangle bounds, int maxEntities = 8, int maxDepth = 5, int depth = 0)
+      : bounds(bounds),
+      maxEntities(maxEntities),
+      maxDepth(maxDepth),
+      depth(depth)
+      {}
+
+      void subdivide() {
+          if (subdivided) return;
+          float hw = bounds.width / 2;
+          float hh = bounds.height / 2;
+          children[0] = std::make_unique<QuadTree>(Rectangle{bounds.x,      bounds.y,      hw, hh}, maxEntities, maxDepth, depth + 1);
+          children[1] = std::make_unique<QuadTree>(Rectangle{bounds.x + hw, bounds.y,      hw, hh}, maxEntities, maxDepth, depth + 1);
+          children[2] = std::make_unique<QuadTree>(Rectangle{bounds.x,      bounds.y + hh, hw, hh}, maxEntities, maxDepth, depth + 1);
+          children[3] = std::make_unique<QuadTree>(Rectangle{bounds.x + hw, bounds.y + hh, hw, hh}, maxEntities, maxDepth, depth + 1);
+          subdivided = true;
+      }
+
+      void insert(int entityId, Rectangle rect) {
+          if (!CheckCollisionRecs(bounds, rect)) return;
+
+          if (!subdivided && (entities.size() < maxEntities || depth >= maxDepth)) {
+              entities.emplace_back(entityId, rect);
+              return;
+          }
+
+          subdivide();
+
+          // Re-insert existing entities into children
+          for (auto& [id, r] : entities) {
+              for (auto& child : children) {
+                  child->insert(id, r);
+              }
+          }
+          entities.clear();
+
+          // Insert the new entity into children
+          for (auto& child : children) {
+              child->insert(entityId, rect);
+          }
+      }
+
+      void query(Rectangle area, std::vector<int>& found) {
+          if (!CheckCollisionRecs(bounds, area)) return;
+
+          for (auto& [id, r] : entities) {
+              found.push_back(id);
+          }
+
+          if (subdivided) {
+              for (auto& child : children) {
+                  child->query(area, found);
+              }
+          }
+      }
+
+      void clear() {
+          entities.clear();
+          if (subdivided) {
+              for (auto& child : children) {
+                  child.reset();
+              }
+              subdivided = false;
+          }
+      }
+  };
 
 struct CollisionSystem {
     World &world;
+    std::vector<QuadTree> quadTrees;
     std::vector<int> removals {};
+
+    void x() {
+
+    };
 
     void processCollisions() {
         removals.clear();
-        for (auto& entity : world.entities.list) {
-            if (!world.directions.has(entity.id)
-                || !world.renderables.has(entity.id)
-                || !world.sizes.has(entity.id)
-                || !world.positions.has(entity.id)
-             ) {
+        QuadTree tree{Rectangle{0, 0, WINDOW_WIDTH, WINDOW_HEIGHT}};
+        for (int i = 0; world.entities.count > i; i++) {
+            int eId = world.entities.list[i].id;
+            if (eId == REMOVED_ENTITY_ID) { continue; }
+            if (!collidable(eId, world)) {
                 continue;
             }
-            int collision_e_id = collidesWith(entity.id);
-            if (collision_e_id != -1) {
-                handleCollision(entity.id, collision_e_id);
-            };
+            Position pos = world.positions.get(eId);
+            Size size = world.sizes.get(eId);
+            tree.insert(eId, Rectangle{(float)pos.x, (float)pos.y,
+                                       (float)size.width, (float)size.height});
 
-        }    
+        }
+
+        // 2. For each entity, query the tree instead of all entities
+        for (int i = 0; i < world.entities.count; i++) {
+            int eId = world.entities.list[i].id;
+            if (eId == REMOVED_ENTITY_ID) continue;
+            if (!collidable(eId, world)) continue;
+
+            Position pos = world.positions.get(eId);
+            Size size = world.sizes.get(eId);
+            Rectangle rect{(float)pos.x, (float)pos.y,
+                            (float)size.width, (float)size.height};
+
+            std::vector<int> nearby{};
+            tree.query(rect, nearby);   // only entities in same region
+
+            for (int other_id : nearby) {
+                if (other_id == eId) continue;
+                if (world.owners.has(other_id)) continue;
+
+                Rectangle otherRect{(float)world.positions.get(other_id).x,
+                                     (float)world.positions.get(other_id).y,
+                                     (float)world.sizes.get(other_id).width,
+                                     (float)world.sizes.get(other_id).height};
+
+                if (CheckCollisionRecs(rect, otherRect)) {
+                    handleCollision(eId, other_id);
+                    break;
+                }
+            }
+        }
+
         for (auto& id : removals) {
             world.erase({id});
         }
     }
 
-    int collidesWith(int current_e_id) {
-        for (auto& entity : world.entities.list) {
-            if (current_e_id == entity.id) { continue; }
-            if (world.owners.has(entity.id)) { continue; }
-            if (!world.directions.has(entity.id)
-                || !world.renderables.has(entity.id)
-                || !world.sizes.has(entity.id)
-                || !world.positions.has(entity.id)
-             ) {
-               continue;
-            }
-            Rectangle rect {
-                (float)world.positions.get(current_e_id).x,
-                (float)world.positions.get(current_e_id).y,
-                (float)world.sizes.get(current_e_id).width,
-                (float)world.sizes.get(current_e_id).height
-            };
-            Rectangle other_rect {
-                (float)world.positions.get(entity.id).x,
-                (float)world.positions.get(entity.id).y,
-                (float)world.sizes.get(entity.id).width,
-                (float)world.sizes.get(entity.id).height
-            };
-            if (CheckCollisionRecs(rect, other_rect)) {
-                return entity.id;
-            }
-        }
-        return -1;
-    }
+    // int collidesWith(int current_e_id) {
+    //     for (auto& entity : world.entities.list) {
+    //         if (current_e_id == entity.id) { continue; }
+    //         if (world.owners.has(entity.id)) { continue; }
+    //         if (!world.directions.has(entity.id)
+    //             || !world.renderables.has(entity.id)
+    //             || !world.sizes.has(entity.id)
+    //             || !world.positions.has(entity.id)
+    //          ) {
+    //            continue;
+    //         }
+    //         Rectangle rect {
+    //             (float)world.positions.get(current_e_id).x,
+    //             (float)world.positions.get(current_e_id).y,
+    //             (float)world.sizes.get(current_e_id).width,
+    //             (float)world.sizes.get(current_e_id).height
+    //         };
+    //         Rectangle other_rect {
+    //             (float)world.positions.get(entity.id).x,
+    //             (float)world.positions.get(entity.id).y,
+    //             (float)world.sizes.get(entity.id).width,
+    //             (float)world.sizes.get(entity.id).height
+    //         };
+    //         if (CheckCollisionRecs(rect, other_rect)) {
+    //             return entity.id;
+    //         }
+    //     }
+    //     return -1;
+    // }
 
     void handleCollision(int e_id, int collision_e_id) {
         if (world.damages.has(e_id) && world.healths.has(collision_e_id)) {
