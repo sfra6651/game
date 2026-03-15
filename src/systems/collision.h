@@ -27,10 +27,10 @@ struct QuadTree {
           if (subdivided) return;
           const float hw = bounds.width / 2;
           const float hh = bounds.height / 2;
-          children[0] = std::make_unique<QuadTree>(Rectangle{bounds.x,      bounds.y,      hw, hh}, maxEntities, maxDepth, depth + 1);
-          children[1] = std::make_unique<QuadTree>(Rectangle{bounds.x + hw, bounds.y,      hw, hh}, maxEntities, maxDepth, depth + 1);
-          children[2] = std::make_unique<QuadTree>(Rectangle{bounds.x,      bounds.y + hh, hw, hh}, maxEntities, maxDepth, depth + 1);
-          children[3] = std::make_unique<QuadTree>(Rectangle{bounds.x + hw, bounds.y + hh, hw, hh}, maxEntities, maxDepth, depth + 1);
+          children[0] = std::make_unique<QuadTree>(Rectangle{bounds.x, bounds.y, hw, hh}, maxEntities, maxDepth, depth + 1);
+          children[1] = std::make_unique<QuadTree>(Rectangle{bounds.x + hw, bounds.y,hw,hh}, maxEntities, maxDepth, depth + 1);
+          children[2] = std::make_unique<QuadTree>(Rectangle{bounds.x, bounds.y + hh,hw,hh}, maxEntities, maxDepth, depth + 1);
+          children[3] = std::make_unique<QuadTree>(Rectangle{bounds.x + hw, bounds.y + hh,hw,hh}, maxEntities, maxDepth, depth + 1);
           subdivided = true;
       }
 

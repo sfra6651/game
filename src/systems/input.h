@@ -21,11 +21,30 @@ struct InputSystem {
 
     void processInput(Entity e) {
 
+        //wasd
         if (IsKeyDown(KEY_W)) world.directions.get(e.id).y = -1.f;
         if (IsKeyDown(KEY_S)) world.directions.get(e.id).y = 1.f;
         if (IsKeyDown(KEY_A)) world.directions.get(e.id).x = -1.f;
         if (IsKeyDown(KEY_D)) world.directions.get(e.id).x = 1.f;
-    
+
+        //diagon normalised movment
+        if (IsKeyDown(KEY_W) && IsKeyDown(KEY_D)) {
+            world.directions.get(e.id).x = 0.7071;
+            world.directions.get(e.id).y = -0.7071;
+        }
+        if (IsKeyDown(KEY_W) && IsKeyDown(KEY_A)) {
+            world.directions.get(e.id).x = -0.7071;
+            world.directions.get(e.id).y = -0.7071;
+        }
+        if (IsKeyDown(KEY_S) && IsKeyDown(KEY_D)) {
+            world.directions.get(e.id).x = 0.7071;
+            world.directions.get(e.id).y = 0.7071;
+        }
+        if (IsKeyDown(KEY_S) && IsKeyDown(KEY_A)) {
+            world.directions.get(e.id).x = -0.7071;
+            world.directions.get(e.id).y = 0.7071;
+        }
+
         if (IsKeyReleased(KEY_W)) world.directions.get(e.id).y = 0;
         if (IsKeyReleased(KEY_S)) world.directions.get(e.id).y = 0;
         if (IsKeyReleased(KEY_A)) world.directions.get(e.id).x = 0;

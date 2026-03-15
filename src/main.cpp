@@ -66,15 +66,16 @@ int main() {
     world.registerPhysicsSystem([&physicsSystem]() {
         physicsSystem.processPhysics();
     });
+    world.registerCollisionSystem([&collisionSystem]() {
+       collisionSystem.processCollisions();
+   });
     world.registerAnimationSystem([&animationSystem]() {
         animationSystem.processAnimations();
     });
     world.registerRenderSystem([&renderingSystem]() {
         renderingSystem.renderWorld();
     });
-    world.registerCollisionSystem([&collisionSystem]() {
-        collisionSystem.processCollisions();
-    });
+
 
     tcpClient.connect();
     DebugProtocol protocol{};
