@@ -1,11 +1,6 @@
 #pragma once
 
-#include "raylib.h"
-
-#include <cassert>
 #include <functional>
-#include <string>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -33,6 +28,7 @@ struct World {
 
     std::function<void()> processInput;
     std::function<void()> processPhysics;
+    std::function<void()> processAnimations;
     std::function<void()> processRenders;
     std::function<void()> processCollisions;
 
@@ -43,6 +39,10 @@ struct World {
     void registerPhysicsSystem(std::function<void()> fn) {
         processPhysics = fn;
     }
+
+    void registerAnimationSystem(std::function<void()> fn) {
+        processAnimations = fn;
+    };
 
     void registerRenderSystem(std::function<void()> fn) {
         processRenders = fn;

@@ -19,7 +19,7 @@ inline Direction calculateDirectionVec(Position origin, Position target){
 struct InputSystem {
     World &world;
 
-    void proccessInput(Entity e) {
+    void processInput(Entity e) {
 
         if (IsKeyDown(KEY_W)) world.directions.get(e.id).y = -1.f;
         if (IsKeyDown(KEY_S)) world.directions.get(e.id).y = 1.f;

@@ -7,11 +7,15 @@
 
 #include "shared/components.h"
 #include "entities/player.h"
+#include "shared/components.h"
+#include "shared/entity.h"
 #include "shared/protocol.h"
 #include "shared/tcp.h"
 #include "systems/collision.h"
+#include "systems/animation.h"
 #include "systems/input.h"
 #include "systems/physics.h"
+#include "systems/renderer.h"
 #include "ecs/world.h"
 #include "entities/enemy.h"
 #include "resources/textureManager.h"
@@ -27,6 +31,7 @@ int main() {
     World world{};
     InputSystem inputSystem { world };
     PhysicsSystem physicsSystem { world };
+    AnimationSystem animationSystem { world };
     RenderingSystem renderingSystem { world };
     CollisionSystem collisionSystem { world };
 
@@ -56,10 +61,13 @@ int main() {
     });
 
     world.registerInputSystem([&player, &inputSystem] () {
-        inputSystem.proccessInput(player);
+        inputSystem.processInput(player);
     });
     world.registerPhysicsSystem([&physicsSystem]() {
-        physicsSystem.proccessPhysics();
+        physicsSystem.processPysics();
+    });
+    world.registerAnimationSystem([&animationSystem]() {
+        animationSystem.processAnimations();
     });
     world.registerRenderSystem([&renderingSystem]() {
         renderingSystem.renderWorld();
@@ -75,11 +83,11 @@ int main() {
     while (!WindowShouldClose()) { 
         BeginDrawing();
         ClearBackground(BLACK);
-
         // draw stuff here
         world.processInput();
         world.processPhysics();
         world.processCollisions();
+        world.processAnimations();
         world.processRenders();
 
         if(tcpClient.isConnected()) {

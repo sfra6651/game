@@ -7,9 +7,15 @@
 #include <vector>
 #include <cassert>
 
-#define MAX_ENTITIES 1000
-#define REMOVED_ENTITY_ID (-1)
+#include "shared/entity.h"
 
+struct Animation {
+    Texture2D spriteSheet;
+    int frames;
+    int frameRows;
+    int frameCols;
+    int frameDuration;
+};
 struct Position { int x; int y; };
 struct Size { int width; int height; };
 struct Renderable { Texture2D texture; };
@@ -19,37 +25,7 @@ struct Damage { int v; };
 struct Health { int v; };
 struct Owner { int id; };
 
-struct Entity {
-    int id;
-};
 
-struct Entities {
-    int count;
-    std::vector<int> freeList;
-    Entity list[MAX_ENTITIES]{};
-
-    Entity create() {
-        int id;
-        if (freeList.size() > 0) {
-            id = freeList[freeList.size() - 1];
-            list[id].id = id;
-            freeList.pop_back();
-            return list[id];
-        }
-
-        assert(count < MAX_ENTITIES && "entity limit reached");
-
-        id = count;
-        list[id].id = id;
-        count += 1;
-        return list[id];
-    };
-
-    void remove(int id) {
-        freeList.push_back(id);
-        list[id].id = REMOVED_ENTITY_ID;
-    };
-};
 
 template<typename T>
 struct ComponentStore {
