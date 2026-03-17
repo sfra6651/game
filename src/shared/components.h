@@ -7,6 +7,7 @@
 #include <vector>
 #include <cassert>
 
+#include "shared/componentRegistry.h"
 #include "shared/entity.h"
 
 struct Animation {
@@ -16,14 +17,14 @@ struct Animation {
     int frameCols;
     int frameDuration;
 };
-struct Position { int x; int y; };
-struct Size { int width; int height; };
-struct Renderable { Texture2D texture; };
-struct Direction { float x; float y; };
-struct Speed { int v; };
 struct Damage { int v; };
+struct Direction { float x; float y; };
 struct Health { int v; };
 struct Owner { int id; };
+struct Position { int x; int y; };
+struct Renderable { Texture2D texture; };
+struct Speed { int v; };
+struct Size { int width; int height; };
 
 
 

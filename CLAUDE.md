@@ -1,6 +1,6 @@
 # Action RPG
 
-2D action RPG built with C++17 and raylib.
+2D action RPG built with C++20 and raylib.
 
 ## Learning Project
 
