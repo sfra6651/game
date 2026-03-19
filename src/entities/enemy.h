@@ -18,12 +18,12 @@ inline Entity enemyFactory(
     World &world,
     EnemyConfig config)
 {
-    Entity enemy = world.entities.create();
-    world.attach(enemy, world.positions, config.pos);
-    world.attach(enemy, world.renderables, Renderable{config.texture});
-    world.attach(enemy, world.sizes, config.size);
-    world.attach(enemy, world.directions, config.direction);
-    world.attach(enemy, world.speeds, config.speed);
-    world.attach(enemy, world.healths, config.health);
+    const Entity enemy = world.entities.create();
+    world.attach(enemy, world.getStore<Position>(), config.pos);
+    world.attach(enemy, world.getStore<Renderable>(), Renderable{config.texture});
+    world.attach(enemy, world.getStore<Size>(), config.size);
+    world.attach(enemy, world.getStore<Direction>(), config.direction);
+    world.attach(enemy, world.getStore<Speed>(), config.speed);
+    world.attach(enemy, world.getStore<Health>(), config.health);
     return enemy;
 };

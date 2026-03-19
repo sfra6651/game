@@ -1,5 +1,8 @@
 #pragma once
 
+#include <vector>
+#include <cassert>
+
 #define REMOVED_ENTITY_ID (-1)
 
 struct Entity {
@@ -15,7 +18,7 @@ struct Entities {
 
     Entity create() {
         int id;
-        if (freeList.size() > 0) {
+        if (!freeList.empty()) {
             id = freeList[freeList.size() - 1];
             list[id].id = id;
             freeList.pop_back();

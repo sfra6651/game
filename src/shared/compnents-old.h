@@ -25,19 +25,15 @@ struct Renderable { Texture2D texture; };
 struct Speed { int v; };
 struct Size { int width; int height; };
 
-using Components = std::tuple<Damage, Direction, Health, Owner, Position, Renderable, Speed, Size>;
-static constexpr int MaxComponents = std::tuple_size_v<Components>;
 
 
 template<typename T>
 struct ComponentStore {
-    using value_type = T;
-
     int sparse[MAX_ENTITIES] {};
     std::vector<T> dense {};
     std::vector<int> entities {};
 
-    
+
     void add(int e_id, T component) {
         dense.push_back(component);
         entities.push_back(e_id);
@@ -74,11 +70,4 @@ struct ComponentStore {
         dense.clear();
         entities.clear();
     };
-};
-
-template<typename T> struct MakeStores;
-
-template<typename... Ts>
-struct MakeStores<std::tuple<Ts...>> {
-    using storeType = std::tuple<ComponentStore<Ts>...>;
 };

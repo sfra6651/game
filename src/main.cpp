@@ -35,17 +35,6 @@ int main() {
     RenderingSystem renderingSystem { world };
     CollisionSystem collisionSystem { world };
 
-    world.registerCleanUp(world.renderables);
-    world.registerCleanUp(world.positions);
-    world.registerCleanUp(world.sizes);
-    world.registerCleanUp(world.directions);
-    world.registerCleanUp(world.speeds);
-    world.registerCleanUp(world.damages);
-    world.registerCleanUp(world.owners);
-    world.registerCleanUp(world.healths);
-
-
-
     world.textureManager.load();
 
     Entity player = playerFactory(world, {

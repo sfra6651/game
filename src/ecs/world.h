@@ -13,18 +13,9 @@
 struct World {
     Entities entities{};
 
-    ComponentStore<Damage> damages;
-    ComponentStore<Direction> directions;
-    ComponentStore<Health> healths;
-    ComponentStore<Position> positions;
-    ComponentStore<Owner> owners;
-    ComponentStore<Renderable> renderables;
-    ComponentStore<Size> sizes;
-    ComponentStore<Speed> speeds;
-
     TextureManager textureManager {};
 
-    std::vector<std::function<void(int)>> cleanUps;
+    MakeStores<Components>::storeType stores;
 
     std::function<void()> processInput;
     std::function<void()> processPhysics;
@@ -32,29 +23,29 @@ struct World {
     std::function<void()> processRenders;
     std::function<void()> processCollisions;
 
-    void registerInputSystem(std::function<void()> fn) {
-        processInput = std::move(fn);
+    void registerInputSystem(const std::function<void()>& fn) {
+        processInput = fn;
     }
 
-    void registerPhysicsSystem(std::function<void()> fn) {
+    void registerPhysicsSystem(const std::function<void()>& fn) {
         processPhysics = fn;
     }
 
-    void registerAnimationSystem(std::function<void()> fn) {
+    void registerAnimationSystem(const std::function<void()>& fn) {
         processAnimations = fn;
     };
 
-    void registerRenderSystem(std::function<void()> fn) {
+    void registerRenderSystem(const std::function<void()>& fn) {
         processRenders = fn;
     }
 
-    void registerCollisionSystem(std::function<void()> fn) {
+    void registerCollisionSystem(const std::function<void()>& fn) {
         processCollisions = fn;
     }
 
     template<typename T>
-    void registerCleanUp(ComponentStore<T> &store){
-        cleanUps.push_back([&store] (int id) { if (store.has(id)) store.remove(id); });
+    ComponentStore<T>& getStore() {
+        return std::get<ComponentStore<T>>(stores);
     }
 
     template<typename T>
@@ -63,9 +54,9 @@ struct World {
     }
 
     void erase(Entity entity) {
-        for (auto& cleanUp: cleanUps) {
-            cleanUp(entity.id);
-        };
+        std::apply([&](auto&... S) {
+            ((S.has(entity.id) ? (S.remove(entity.id), 0) : 0), ...);
+        }, stores);
         entities.remove(entity.id);
     }
 };

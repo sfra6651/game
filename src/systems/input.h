@@ -21,38 +21,40 @@ struct InputSystem {
 
     void processInput(Entity e) {
 
+        ComponentStore<Direction> &directions = world.getStore<Direction>();
+
         //wasd
-        if (IsKeyDown(KEY_W)) world.directions.get(e.id).y = -1.f;
-        if (IsKeyDown(KEY_S)) world.directions.get(e.id).y = 1.f;
-        if (IsKeyDown(KEY_A)) world.directions.get(e.id).x = -1.f;
-        if (IsKeyDown(KEY_D)) world.directions.get(e.id).x = 1.f;
+        if (IsKeyDown(KEY_W)) directions.get(e.id).y = -1.f;
+        if (IsKeyDown(KEY_S)) directions.get(e.id).y = 1.f;
+        if (IsKeyDown(KEY_A)) directions.get(e.id).x = -1.f;
+        if (IsKeyDown(KEY_D)) directions.get(e.id).x = 1.f;
 
         //diagon normalised movment
         if (IsKeyDown(KEY_W) && IsKeyDown(KEY_D)) {
-            world.directions.get(e.id).x = 0.7071;
-            world.directions.get(e.id).y = -0.7071;
+            directions.get(e.id).x = 0.7071;
+            directions.get(e.id).y = -0.7071;
         }
         if (IsKeyDown(KEY_W) && IsKeyDown(KEY_A)) {
-            world.directions.get(e.id).x = -0.7071;
-            world.directions.get(e.id).y = -0.7071;
+            directions.get(e.id).x = -0.7071;
+            directions.get(e.id).y = -0.7071;
         }
         if (IsKeyDown(KEY_S) && IsKeyDown(KEY_D)) {
-            world.directions.get(e.id).x = 0.7071;
-            world.directions.get(e.id).y = 0.7071;
+            directions.get(e.id).x = 0.7071;
+            directions.get(e.id).y = 0.7071;
         }
         if (IsKeyDown(KEY_S) && IsKeyDown(KEY_A)) {
-            world.directions.get(e.id).x = -0.7071;
-            world.directions.get(e.id).y = 0.7071;
+            directions.get(e.id).x = -0.7071;
+            directions.get(e.id).y = 0.7071;
         }
 
-        if (IsKeyReleased(KEY_W)) world.directions.get(e.id).y = 0;
-        if (IsKeyReleased(KEY_S)) world.directions.get(e.id).y = 0;
-        if (IsKeyReleased(KEY_A)) world.directions.get(e.id).x = 0;
-        if (IsKeyReleased(KEY_D)) world.directions.get(e.id).x = 0;
+        if (IsKeyReleased(KEY_W)) directions.get(e.id).y = 0;
+        if (IsKeyReleased(KEY_S)) directions.get(e.id).y = 0;
+        if (IsKeyReleased(KEY_A)) directions.get(e.id).x = 0;
+        if (IsKeyReleased(KEY_D)) directions.get(e.id).x = 0;
 
         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
             Vector2 mousePos= GetMousePosition();
-            Position playerPos = world.positions.get(e.id);
+            Position playerPos = world.getStore<Position>().get(e.id);
             Texture2D bulletTexture = world.textureManager.get("bullet.png");
             Direction dir = calculateDirectionVec({playerPos.x-32, playerPos.y+32}, { (int)mousePos.x, (int)mousePos.y});
             projectileFactory(world, {

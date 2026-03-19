@@ -19,11 +19,11 @@ inline Entity playerFactory(
     World &world,
     PlayerConfig config)
 {
-    Entity player = world.entities.create();
-    world.attach(player, world.positions, config.pos);
-    world.attach(player, world.renderables, Renderable{config.texture});
-    world.attach(player, world.sizes, config.size);
-    world.attach(player, world.directions, config.direction);
-    world.attach(player, world.speeds, config.speed);
+    const Entity player = world.entities.create();
+    world.attach(player, world.getStore<Position>(), config.pos);
+    world.attach(player, world.getStore<Renderable>(), Renderable{config.texture});
+    world.attach(player, world.getStore<Size>(), config.size);
+    world.attach(player, world.getStore<Direction>(), config.direction);
+    world.attach(player, world.getStore<Speed>(), config.speed);
     return player;
 };

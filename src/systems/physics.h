@@ -20,13 +20,13 @@ struct PhysicsSystem {
             int e_id = world.entities.list[i].id;
             //guard
             if (e_id == REMOVED_ENTITY_ID
-                || !world.directions.has(e_id)
+                || !world.getStore<Direction>().has(e_id)
                 || !hasPysics(e_id, world)) {
                 continue;
             };
-            Direction dir = world.directions.get(e_id);
-            Position pos = world.positions.get(e_id);
-            Speed speed = world.speeds.get(e_id);
+            Direction dir = world.getStore<Direction>().get(e_id);
+            Position pos = world.getStore<Position>().get(e_id);
+            Speed speed = world.getStore<Speed>().get(e_id);
 
             Position new_pos {(int)(pos.x + dir.x * speed.v), (int)(pos.y + dir.y * speed.v)};
 
@@ -35,7 +35,7 @@ struct PhysicsSystem {
                 removals.push_back(i);
                 continue;
             };
-            world.positions.get(e_id) = new_pos;
+            world.getStore<Position>().get(e_id) = new_pos;
 
         };
        for (auto id : removals) {

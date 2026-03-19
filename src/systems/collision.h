@@ -101,8 +101,8 @@ struct CollisionSystem {
             if (!collidable(eId, world)) {
                 continue;
             }
-            Position pos = world.positions.get(eId);
-            Size size = world.sizes.get(eId);
+            Position pos = world.getStore<Position>().get(eId);
+            Size size = world.getStore<Size>().get(eId);
             tree.insert(eId, Rectangle{(float)pos.x, (float)pos.y,
                                        (float)size.width, (float)size.height});
 
@@ -114,8 +114,8 @@ struct CollisionSystem {
             if (eId == REMOVED_ENTITY_ID) continue;
             if (!collidable(eId, world)) continue;
 
-            Position pos = world.positions.get(eId);
-            Size size = world.sizes.get(eId);
+            Position pos = world.getStore<Position>().get(eId);
+            Size size = world.getStore<Size>().get(eId);
             Rectangle rect{(float)pos.x, (float)pos.y,
                             (float)size.width, (float)size.height};
 
@@ -124,12 +124,12 @@ struct CollisionSystem {
 
             for (const int other_id : nearby) {
                 if (other_id == eId) continue;
-                if (world.owners.has(other_id)) continue;
+                if (world.getStore<Owner>().has(other_id)) continue;
 
-                Rectangle otherRect{(float)world.positions.get(other_id).x,
-                                     (float)world.positions.get(other_id).y,
-                                     (float)world.sizes.get(other_id).width,
-                                     (float)world.sizes.get(other_id).height};
+                Rectangle otherRect{(float)world.getStore<Position>().get(other_id).x,
+                                     (float)world.getStore<Position>().get(other_id).y,
+                                     (float)world.getStore<Size>().get(other_id).width,
+                                     (float)world.getStore<Size>().get(other_id).height};
 
                 if (CheckCollisionRecs(rect, otherRect)) {
                     handleCollision(eId, other_id);
@@ -144,14 +144,14 @@ struct CollisionSystem {
     }
 
     void handleCollision(int e_id, int collision_e_id) {
-        if (world.damages.has(e_id) && world.healths.has(collision_e_id)) {
+        if (world.getStore<Damage>().has(e_id) && world.getStore<Health>().has(collision_e_id)) {
             resolveDamage(e_id, collision_e_id);
         }
     }
 
     void resolveDamage(int damaging_id, int target_id) {
-        world.healths.get(target_id).v -= world.damages.get(damaging_id).v;
-        if (world.healths.get(target_id).v <= 0) {
+        world.getStore<Health>().get(target_id).v -= world.getStore<Damage>().get(damaging_id).v;
+        if (world.getStore<Health>().get(target_id).v <= 0) {
             removals.push_back(target_id);
         }
         removals.push_back(damaging_id);
