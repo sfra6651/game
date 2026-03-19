@@ -7,9 +7,9 @@
 
 #include "shared/components.h"
 #include "entities/player.h"
-#include "shared/components.h"
 #include "shared/entity.h"
-#include "shared/protocol.h"
+#include "shared/message.h"
+#include "shared/snapshot.h"
 #include "shared/tcp.h"
 #include "systems/collision.h"
 #include "systems/animation.h"
@@ -19,7 +19,6 @@
 #include "ecs/world.h"
 #include "entities/enemy.h"
 #include "resources/textureManager.h"
-#include "systems/renderer.h"
 
 
 int main() {
@@ -65,26 +64,48 @@ int main() {
         renderingSystem.renderWorld();
     });
 
-
     tcpClient.connect();
-    DebugProtocol protocol{};
+    TcpConnection &conn = tcpClient.connection();
+    bool debugPaused = false;
 
-
-    while (!WindowShouldClose()) { 
+    while (!WindowShouldClose()) {
         BeginDrawing();
         ClearBackground(BLACK);
-        // draw stuff here
+
         world.processInput();
         world.processPhysics();
         world.processCollisions();
         world.processAnimations();
         world.processRenders();
 
-        if(tcpClient.isConnected()) {
-            protocol.instruction = PROCESS_NEXT_FRAME;
-            protocol.createEntitySnaps(world);
-            protocol.sendTo(tcpClient);
-        };
+        if (!conn.isConnected()) {
+            debugPaused = false;
+        } else {
+            auto snaps = createEntitySnaps(world);
+            if (!sendMessage(conn, MessageType::FRAME_SNAPSHOT,
+                        snaps.data(), snaps.size() * sizeof(EntitySnapshot))) {
+                debugPaused = false;
+            } else if (!debugPaused) {
+                // Running: non-blocking drain, check for PAUSE
+                MessageHeader header{};
+                std::vector<uint8_t> payload;
+                while (tryRecvMessage(conn, header, payload)) {
+                    if (header.type == MessageType::PAUSE) { debugPaused = true; break; }
+                }
+            }
+
+            // Paused: block waiting for STEP or RESUME
+            while (debugPaused && conn.isConnected()) {
+                MessageHeader header{};
+                std::vector<uint8_t> payload;
+                if (!recvMessage(conn, header, payload)) {
+                    debugPaused = false;
+                    break;
+                }
+                if (header.type == MessageType::STEP) break;
+                if (header.type == MessageType::RESUME) debugPaused = false;
+            }
+        }
 
         EndDrawing();
     }

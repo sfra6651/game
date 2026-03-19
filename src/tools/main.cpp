@@ -3,9 +3,11 @@
 #include "imgui_impl_opengl3.h"
 
 #include <GLFW/glfw3.h>
+#include <atomic>
 #include <mutex>
 
-#include "shared/protocol.h"
+#include "shared/message.h"
+#include "shared/snapshot.h"
 #include "shared/tcp.h"
 
 static TcpServer server;
@@ -71,19 +73,39 @@ int main() {
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 330");
 
-    DebugProtocol protocol{};
     WorldSnap worldSnap{};
 
-    static std::mutex contentMutex;
+    std::mutex contentMutex;
+    std::atomic<bool> paused{false};
 
     server.start();
-    std::thread revcThread([&]() {
+    TcpConnection &conn = server.connection();
+
+    // Recv thread: just receives snapshots and updates worldSnap
+    std::thread recvThread([&]() {
         while (server.running_) {
-            if (protocol.recvFrom(server)) {
+            if (!server.isConnected()) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(50));
+                continue;
+            }
+
+            MessageHeader header{};
+            std::vector<uint8_t> payload;
+            if (!recvMessage(conn, header, payload)) {
+                server.connected_ = false;
+                paused = false;
+                continue;
+            }
+
+            if (header.type == MessageType::FRAME_SNAPSHOT) {
+                int count = header.payloadSize / sizeof(EntitySnapshot);
+                std::vector<EntitySnapshot> snaps(count);
+                memcpy(snaps.data(), payload.data(), header.payloadSize);
+
                 std::lock_guard<std::mutex> lock(contentMutex);
-                protocol.createWorldSnap(worldSnap);
-            };
-        };
+                createWorldSnap(snaps, worldSnap);
+            }
+        }
     });
 
     while (!glfwWindowShouldClose(window)) {
@@ -97,8 +119,31 @@ int main() {
 
         drawConnectionStatus();
 
-        std::lock_guard<std::mutex> lock(contentMutex);
-        //EntitiesTable(worldSnap);
+        // Debug controls
+        ImGui::Begin("Controls");
+        if (server.isConnected()) {
+            if (paused) {
+                if (ImGui::Button("Resume")) {
+                    paused = false;
+                    sendMessage(conn, MessageType::RESUME);
+                }
+                ImGui::SameLine();
+                if (ImGui::Button("Step")) {
+                    sendMessage(conn, MessageType::STEP);
+                }
+            } else {
+                if (ImGui::Button("Pause")) {
+                    paused = true;
+                    sendMessage(conn, MessageType::PAUSE);
+                }
+            }
+        }
+        ImGui::End();
+
+        {
+            std::lock_guard<std::mutex> lock(contentMutex);
+            //EntitiesTable(worldSnap);
+        }
 
         ImGui::Render();
         int displayW, displayH;
@@ -112,6 +157,7 @@ int main() {
     }
 
     server.stop();
+    if (recvThread.joinable()) recvThread.join();
 
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
