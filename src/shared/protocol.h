@@ -1,8 +1,5 @@
 #pragma once
 
-#include <cstdint>
-#include <cstring>
-#include <string>
 #include <vector>
 
 #include "ecs/world.h"
@@ -10,7 +7,7 @@
 #include "shared/tcp.h"
 
 enum ProtocolInstruction {
-    PROCCESS_NEXT_FRAME,
+    PROCESS_NEXT_FRAME,
     WAIT,
 };
 

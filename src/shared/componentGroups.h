@@ -1,5 +1,4 @@
 #pragma once
-#include <vector>
 
 #include "components.h"
 #include "ecs/world.h"

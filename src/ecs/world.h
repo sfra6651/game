@@ -49,7 +49,7 @@ struct World {
     }
 
     template<typename T>
-    void attach(Entity entity, ComponentStore<T> &store, T component){
+    void attach(Entity entity, ComponentStore<T> &store, T component) {
         store.add(entity.id, component);
     }
 

@@ -81,7 +81,7 @@ int main() {
         world.processRenders();
 
         if(tcpClient.isConnected()) {
-            protocol.instruction = PROCCESS_NEXT_FRAME;
+            protocol.instruction = PROCESS_NEXT_FRAME;
             protocol.createEntitySnaps(world);
             protocol.sendTo(tcpClient);
         };

@@ -9,13 +9,6 @@
 
 #include "shared/entity.h"
 
-struct Animation {
-    Texture2D spriteSheet;
-    int frames;
-    int frameRows;
-    int frameCols;
-    int frameDuration;
-};
 struct Damage { int v; };
 struct Direction { float x; float y; };
 struct Health { int v; };
@@ -25,7 +18,16 @@ struct Renderable { Texture2D texture; };
 struct Speed { int v; };
 struct Size { int width; int height; };
 
-using Components = std::tuple<Damage, Direction, Health, Owner, Position, Renderable, Speed, Size>;
+using Components = std::tuple<
+    Damage,
+    Direction,
+    Health,
+    Owner,
+    Position,
+    Renderable,
+    Speed,
+    Size
+>;
 static constexpr int MaxComponents = std::tuple_size_v<Components>;
 
 
@@ -38,14 +40,14 @@ struct ComponentStore {
     std::vector<int> entities {};
 
     
-    void add(int e_id, T component) {
+    void add(int eId, T component) {
         dense.push_back(component);
-        entities.push_back(e_id);
-        sparse[e_id] = dense.size() - 1;
+        entities.push_back(eId);
+        sparse[eId] = dense.size() - 1;
     };
 
-    void remove(int e_id){
-        int denseIndex = sparse[e_id];
+    void remove(int eId){
+        int denseIndex = sparse[eId];
         int lastId = entities[entities.size()-1];
         if (entities.size() > 1) {
             std::swap(entities[denseIndex], entities[entities.size()-1]);
@@ -60,14 +62,14 @@ struct ComponentStore {
         return entities.size();
     };
 
-    T& get(int e_id) {
-        int denseIndex = sparse[e_id];
+    T& get(int eId) {
+        int denseIndex = sparse[eId];
         return dense[denseIndex];
     };
 
-    bool has(int e_id) {
-        int denseIndex = sparse[e_id];
-        return denseIndex < dense.size() && entities[denseIndex] == e_id;
+    bool has(int eId) {
+        int denseIndex = sparse[eId];
+        return denseIndex < dense.size() && entities[denseIndex] == eId;
     };
 
     void clear() {
