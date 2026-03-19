@@ -16,6 +16,10 @@ struct Entities {
     std::vector<int> freeList;
     Entity list[MAX_ENTITIES]{};
 
+    Entity get(int id) {
+        return list[id];
+    }
+
     Entity create() {
         int id;
         if (!freeList.empty()) {

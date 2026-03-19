@@ -29,14 +29,14 @@ inline void EntitiesTable(WorldSnap &worldSnap) {
         ImGui::TableSetupColumn("size");
         ImGui::TableHeadersRow();
 
-        for (auto &entity: worldSnap.entities) {
-            int id = entity.id;
+        for (int i = 0; i <= worldSnap.entities.count; i++) {
+            int id = worldSnap.entities.get(id).id;
             ImGui::TableNextRow();
             ImGui::TableNextColumn(); ImGui::Text("%d", id);
-            ImGui::TableNextColumn(); ImGui::Text("%d, %d", worldSnap.positions.get(id).x, worldSnap.positions.get(id).y);
-            ImGui::TableNextColumn(); ImGui::Text("%f.2, %f.2", worldSnap.directions.get(id).x, worldSnap.directions.get(id).y);
-            ImGui::TableNextColumn(); ImGui::Text("%d", worldSnap.speeds.get(id).v);
-            ImGui::TableNextColumn(); ImGui::Text("%d, %d", worldSnap.sizes.get(id).width, worldSnap.sizes.get(id).height);
+            ImGui::TableNextColumn(); ImGui::Text("%d, %d", worldSnap.getStore<Position>().get(id).x, worldSnap.getStore<Position>().get(id).y);
+            ImGui::TableNextColumn(); ImGui::Text("%f.2, %f.2", worldSnap.getStore<Direction>().get(id).x, worldSnap.getStore<Direction>().get(id).y);
+            ImGui::TableNextColumn(); ImGui::Text("%d", worldSnap.getStore<Speed>().get(id).v);
+            ImGui::TableNextColumn(); ImGui::Text("%d, %d", worldSnap.getStore<Size>().get(id).width, worldSnap.getStore<Size>().get(id).height);
         };
 
         ImGui::EndTable();
@@ -81,7 +81,7 @@ int main() {
         while (server.running_) {
             if (protocol.recvFrom(server)) {
                 std::lock_guard<std::mutex> lock(contentMutex);
-                protocol.parseEntitySnaps(worldSnap);
+                protocol.createWorldSnap(worldSnap);
             };
         };
     });
@@ -98,7 +98,7 @@ int main() {
         drawConnectionStatus();
 
         std::lock_guard<std::mutex> lock(contentMutex);
-        EntitiesTable(worldSnap);
+        //EntitiesTable(worldSnap);
 
         ImGui::Render();
         int displayW, displayH;
