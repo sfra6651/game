@@ -48,7 +48,7 @@ int main() {
     InputSystem inputSystem { world, camera,Vector2 {(float)monitorWidth/VIRTUAL_WIDTH, (float)monitorHeight/VIRTUAL_HEIGHT} };
     PhysicsSystem physicsSystem { world };
     AnimationSystem animationSystem { world };
-    RenderingSystem renderingSystem { world };
+    RenderingSystem renderingSystem { world, camera };
     CollisionSystem collisionSystem { world };
 
     world.textureManager.load();

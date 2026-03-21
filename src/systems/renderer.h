@@ -12,12 +12,23 @@
 #include "lib/utils.h"
 
 struct RenderingSystem{
-    World &world;
+    World& world;
+    Camera2D& camera;
 
     void drawTiles(Texture2D& srcset) {
-        for (int i = 0; i < MAP_ROWS; i++) {
-            for (int j = 0; j < MAP_COLS; j++) {
-                //if (CheckCollisionRecs({}, {});
+        float camLeft = camera.target.x - VIRTUAL_WIDTH / 2.0f;
+        float camTop = camera.target.y - VIRTUAL_HEIGHT / 2.0f;
+        float camRight = camLeft + VIRTUAL_WIDTH;
+        float camBottom = camTop + VIRTUAL_HEIGHT;
+
+        //Convert to tile indices:
+
+        int startCol = std::max(0, (int)(camLeft / TILE_SIZE));
+        int startRow = std::max(0, (int)(camTop / TILE_SIZE));
+        int endCol = std::min(MAP_COLS, (int)(camRight / TILE_SIZE) + 1);
+        int endRow = std::min(MAP_ROWS, (int)(camBottom / TILE_SIZE) + 1);
+        for (int i = startRow; i < endRow; i++) {
+            for (int j = startCol; j < endCol; j++) {
                 Rectangle src {
                     0,
                     0,
