@@ -1,20 +1,24 @@
 #pragma once
 
 #include <functional>
-#include <utility>
-#include <vector>
 
 #include "resources/textureManager.h"
 #include "shared/components.h"
 
-#define WORLD_WIDTH 5000
-#define WORLD_HEIGHT 5000
+#define TILE_SIZE 64 
+#define MAP_COLS  100
+#define MAP_ROWS  100
+
+#define WORLD_WIDTH (TILE_SIZE * MAP_COLS)
+#define WORLD_HEIGHT (TILE_SIZE * MAP_ROWS)
 #define VIRTUAL_WIDTH 1920
 #define VIRTUAL_HEIGHT 1080
 
+
+
 struct World {
     Entities entities{};
-
+    int tilemap[MAP_ROWS][MAP_COLS] {};
     TextureManager textureManager {};
 
     MakeStores<Components>::storeType stores;

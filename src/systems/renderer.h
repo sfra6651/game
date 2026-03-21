@@ -14,7 +14,28 @@
 struct RenderingSystem{
     World &world;
 
-   void renderWorld(){
+    void drawTiles(Texture2D& srcset) {
+        for (int i = 0; i < MAP_ROWS; i++) {
+            for (int j = 0; j < MAP_COLS; j++) {
+                //if (CheckCollisionRecs({}, {});
+                Rectangle src {
+                    0,
+                    0,
+                    89,
+                    92
+                };
+                Rectangle dest {
+                    (float)(j * TILE_SIZE), 
+                    (float)(i * TILE_SIZE),
+                    (float)TILE_SIZE,
+                    (float)TILE_SIZE,
+                };
+                DrawTexturePro(srcset, src, dest, {0,0}, 0.0f, WHITE);
+            }
+        }
+    }
+
+    void drawEntities() {
         Entities &entities = world.entities;
        ComponentStore<Position> &positions = world.getStore<Position>();
        ComponentStore<Renderable> &renderables = world.getStore<Renderable>();
@@ -41,6 +62,11 @@ struct RenderingSystem{
             };
             DrawTexturePro(renderables.get(e_id).texture , src, dest, {0, 0}, 0.0f, WHITE );
         };
+    }
+
+   void renderWorld(Texture2D& srcset){
+        drawTiles(srcset);
+        drawEntities();
     };
 
 };

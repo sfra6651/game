@@ -1,13 +1,10 @@
 #include <cassert>
 #include <functional>
-#include <random>
-#include <syncstream>
-#include <vector>
+#include <cstring>
 
 #include "raylib.h"
 
 
-#include "shared/components.h"
 #include "entities/player.h"
 #include "shared/entity.h"
 #include "systems/collision.h"
@@ -56,6 +53,10 @@ int main() {
 
     world.textureManager.load();
 
+    //println(std::filesystem::current_path().string());
+    Texture2D tilesTexture = LoadTexture("./assets/textures/ork_world_tileset.png");
+    std::fill(&world.tilemap[0][0], &world.tilemap[MAP_ROWS-1][MAP_COLS], 0);
+
     Entity player = playerFactory(world, {
         .texture = {world.textureManager.get("space_marine_top_down.png")},
         .pos = {WORLD_WIDTH/2, WORLD_HEIGHT/2},
@@ -80,8 +81,8 @@ int main() {
     world.registerAnimationSystem([&animationSystem]() {
         animationSystem.processAnimations();
     });
-    world.registerRenderSystem([&renderingSystem]() {
-        renderingSystem.renderWorld();
+    world.registerRenderSystem([&renderingSystem, &tilesTexture]() {
+        renderingSystem.renderWorld(tilesTexture);
     });
 
 
