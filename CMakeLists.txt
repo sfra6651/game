@@ -48,14 +48,13 @@ target_link_libraries(imgui_lib PUBLIC glfw OpenGL::GL)
 # Game
 add_executable(game
     src/main.cpp
+    src/lib/osScaling.cpp
 )
 target_include_directories(game PRIVATE src)
-target_link_libraries(game PRIVATE raylib)
+if(UNIX AND NOT APPLE)
+    find_package(X11 REQUIRED)
+    target_link_libraries(game PRIVATE raylib imgui_lib X11::X11 X11::Xrandr)
+else()
+    target_link_libraries(game PRIVATE raylib imgui_lib)
+endif()
 target_compile_definitions(game PRIVATE $<$<CONFIG:Debug>:DEBUG>)
-
-# Dev Tools
-add_executable(tools
-    src/tools/main.cpp
-)
-target_include_directories(tools PRIVATE src)
-target_link_libraries(tools PRIVATE imgui_lib raylib)

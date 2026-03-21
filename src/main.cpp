@@ -1,16 +1,14 @@
-#include "raylib.h"
-
 #include <cassert>
 #include <functional>
 #include <random>
+#include <syncstream>
 #include <vector>
+
+#include "raylib.h"
 
 #include "shared/components.h"
 #include "entities/player.h"
 #include "shared/entity.h"
-#include "shared/message.h"
-#include "shared/snapshot.h"
-#include "shared/tcp.h"
 #include "systems/collision.h"
 #include "systems/animation.h"
 #include "systems/input.h"
@@ -19,13 +17,37 @@
 #include "ecs/world.h"
 #include "entities/enemy.h"
 #include "resources/textureManager.h"
+#include "lib/utils.h"
+#include "lib/osScaling.h"
 
+#define VIRTUAL_WIDTH 1920
+#define VIRTUAL_HEIGHT 1080
 
 int main() {
-    InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "My Game");
+    SetConfigFlags(FLAG_WINDOW_HIDDEN);
+    InitWindow(1, 1, "");
+#ifdef DEBUG
+    int monitor = GetMonitorCount() > 1 ? 1 : 0;
+#else
+    int monitor = 0;
+#endif
+    float osScale = getOsScaleFactor();
+    int mW = (int)roundf(GetMonitorWidth(monitor) * osScale);
+    int mH = (int)roundf(GetMonitorHeight(monitor) * osScale);
+    Vector2 monitorPos = GetMonitorPosition(monitor);
+    SetWindowPosition(monitorPos.x, monitorPos.y);
+    ToggleBorderlessWindowed();
+    SetWindowSize(mW, mH);
+    ClearWindowState(FLAG_WINDOW_HIDDEN);
     SetTargetFPS(60);
 
-    TcpClient tcpClient {};
+    RenderTexture2D target = LoadRenderTexture(VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
+
+    println(osScale);
+    println("Monitor", mW, mH);
+    println("Window:", GetScreenWidth(), "Render:", GetRenderWidth());
+    println("Screen:", GetScreenWidth(), GetScreenHeight());
+    println("Render:", GetRenderWidth(), GetRenderHeight());
 
     World world{};
     InputSystem inputSystem { world };
@@ -64,12 +86,8 @@ int main() {
         renderingSystem.renderWorld();
     });
 
-    tcpClient.connect();
-    TcpConnection &conn = tcpClient.connection();
-    bool debugPaused = false;
-
     while (!WindowShouldClose()) {
-        BeginDrawing();
+        BeginTextureMode(target);
         ClearBackground(BLACK);
 
         world.processInput();
@@ -77,40 +95,14 @@ int main() {
         world.processCollisions();
         world.processAnimations();
         world.processRenders();
+        EndTextureMode();
 
-        if (!conn.isConnected()) {
-            debugPaused = false;
-        } else {
-            auto snaps = createEntitySnaps(world);
-            if (!sendMessage(conn, MessageType::FRAME_SNAPSHOT,
-                        snaps.data(), snaps.size() * sizeof(EntitySnapshot))) {
-                debugPaused = false;
-            } else if (!debugPaused) {
-                // Running: non-blocking drain, check for PAUSE
-                MessageHeader header{};
-                std::vector<uint8_t> payload;
-                while (tryRecvMessage(conn, header, payload)) {
-                    if (header.type == MessageType::PAUSE) { debugPaused = true; break; }
-                }
-            }
-
-            // Paused: block waiting for STEP or RESUME
-            while (debugPaused && conn.isConnected()) {
-                MessageHeader header{};
-                std::vector<uint8_t> payload;
-                if (!recvMessage(conn, header, payload)) {
-                    debugPaused = false;
-                    break;
-                }
-                if (header.type == MessageType::STEP) break;
-                if (header.type == MessageType::RESUME) debugPaused = false;
-            }
-        }
-
+        BeginDrawing();
+        Rectangle src = {0, 0, VIRTUAL_WIDTH, -VIRTUAL_HEIGHT};
+        Rectangle dst = {0, 0, (float)mW, (float)mH};
+        DrawTexturePro(target.texture, src, dst, {0, 0}, 0, WHITE);
         EndDrawing();
     }
-
-    tcpClient.disconnect();
 
     CloseWindow();
     return 0;
