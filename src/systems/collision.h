@@ -94,7 +94,7 @@ struct CollisionSystem {
 
     void processCollisions() {
         removals.clear();
-        QuadTree tree{Rectangle{0, 0, WINDOW_WIDTH, WINDOW_HEIGHT}};
+        QuadTree tree{Rectangle{0, 0, WORLD_WIDTH, WORLD_HEIGHT}};
         for (int i = 0; world.entities.count > i; i++) {
             const int eId = world.entities.list[i].id;
             if (eId == REMOVED_ENTITY_ID) { continue; }

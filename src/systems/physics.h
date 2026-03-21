@@ -30,8 +30,8 @@ struct PhysicsSystem {
 
             Position new_pos {(int)(pos.x + dir.x * speed.v), (int)(pos.y + dir.y * speed.v)};
 
-            if (std::abs(new_pos.x) >= WINDOW_WIDTH * 2 ||
-                std::abs(new_pos.y) >= WINDOW_HEIGHT * 2) {
+            if (std::abs(new_pos.x) >= VIRTUAL_WIDTH* 2 ||
+                std::abs(new_pos.y) >= VIRTUAL_HEIGHT* 2) {
                 removals.push_back(i);
                 continue;
             };

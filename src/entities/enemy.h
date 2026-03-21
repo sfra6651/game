@@ -7,7 +7,7 @@
 
 struct EnemyConfig {
     Texture2D &texture;
-    Position pos = { (int)WINDOW_WIDTH/2, (int)WINDOW_HEIGHT/2 };
+    Position pos = { (int)VIRTUAL_WIDTH/2, (int)VIRTUAL_HEIGHT/2 };
     Size size = { 64, 64 };
     Direction direction = { 0.f, 0.f };
     Speed speed = { 0 };

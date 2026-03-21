@@ -6,6 +6,7 @@
 
 #include "raylib.h"
 
+
 #include "shared/components.h"
 #include "entities/player.h"
 #include "shared/entity.h"
@@ -20,8 +21,6 @@
 #include "lib/utils.h"
 #include "lib/osScaling.h"
 
-#define VIRTUAL_WIDTH 1920
-#define VIRTUAL_HEIGHT 1080
 
 int main() {
     SetConfigFlags(FLAG_WINDOW_HIDDEN);

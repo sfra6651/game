@@ -7,8 +7,10 @@
 #include "resources/textureManager.h"
 #include "shared/components.h"
 
-#define WINDOW_WIDTH 1920
-#define WINDOW_HEIGHT 1080
+#define WORLD_WIDTH 5000
+#define WORLD_HEIGHT 5000
+#define VIRTUAL_WIDTH 1920
+#define VIRTUAL_HEIGHT 1080
 
 struct World {
     Entities entities{};
