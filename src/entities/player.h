@@ -7,7 +7,7 @@
 
 struct PlayerConfig {
     Texture2D &texture;
-    Position pos = { (int)WORLD_WIDTH/2, (int)WORLD_HEIGHT/2 };
+    Position pos = { WORLD_WIDTH/2.0f, WORLD_HEIGHT/2.0f };
     Size size = { 64, 64 };
     Direction direction = { 0.f, 0.f };
     Speed speed = { 0 };

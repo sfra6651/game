@@ -13,7 +13,7 @@ struct Damage { int v; };
 struct Direction { float x; float y; };
 struct Health { int v; };
 struct Owner { int id; };
-struct Position { int x; int y; };
+struct Position { float x; float y; };
 struct Renderable { Texture2D texture; };
 struct Speed { int v; };
 struct Size { int width; int height; };

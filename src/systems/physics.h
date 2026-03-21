@@ -28,7 +28,7 @@ struct PhysicsSystem {
             Position pos = world.getStore<Position>().get(e_id);
             Speed speed = world.getStore<Speed>().get(e_id);
 
-            Position new_pos {(int)(pos.x + dir.x * speed.v), (int)(pos.y + dir.y * speed.v)};
+            Position new_pos {pos.x + dir.x * speed.v, pos.y + dir.y * speed.v};
 
             if (std::abs(new_pos.x) >= WORLD_WIDTH ||
                 std::abs(new_pos.y) >= WORLD_HEIGHT* 2) {

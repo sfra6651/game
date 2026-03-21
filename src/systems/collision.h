@@ -126,8 +126,8 @@ struct CollisionSystem {
                 if (other_id == eId) continue;
                 if (world.getStore<Owner>().has(other_id)) continue;
 
-                Rectangle otherRect{(float)world.getStore<Position>().get(other_id).x,
-                                     (float)world.getStore<Position>().get(other_id).y,
+                Rectangle otherRect{world.getStore<Position>().get(other_id).x,
+                                     world.getStore<Position>().get(other_id).y,
                                      (float)world.getStore<Size>().get(other_id).width,
                                      (float)world.getStore<Size>().get(other_id).height};
 

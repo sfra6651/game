@@ -21,8 +21,7 @@ struct RenderingSystem{
         float camRight = camLeft + VIRTUAL_WIDTH;
         float camBottom = camTop + VIRTUAL_HEIGHT;
 
-        //Convert to tile indices:
-
+        //Convert to tile indices, + 1 to give some padding for partially visible tiles:
         int startCol = std::max(0, (int)(camLeft / TILE_SIZE));
         int startRow = std::max(0, (int)(camTop / TILE_SIZE));
         int endCol = std::min(MAP_COLS, (int)(camRight / TILE_SIZE) + 1);
@@ -66,8 +65,8 @@ struct RenderingSystem{
                 (float)renderables.get(e_id).texture.height
             };
             Rectangle dest { 
-                (float)positions.get(e_id).x,
-                (float)positions.get(e_id).y,
+                positions.get(e_id).x,
+                positions.get(e_id).y,
                 (float)sizes.get(e_id).width,
                 (float)sizes.get(e_id).height
             };

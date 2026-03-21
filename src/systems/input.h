@@ -70,11 +70,11 @@ struct InputSystem {
             Vector2 mousePos = getMouseWorldPosition(camera, VirtualScale);
             Position playerPos = world.getStore<Position>().get(e.id);
             Texture2D bulletTexture = world.textureManager.get("bullet.png");
-            Direction dir = calculateDirectionVec({playerPos.x-32, playerPos.y+32}, { (int)mousePos.x, (int)mousePos.y});
+            Direction dir = calculateDirectionVec({ playerPos.x + 32, playerPos.y + 32 }, { mousePos.x, mousePos.y });
             projectileFactory(world, {
              .texture = bulletTexture,
              .owner = { e.id },
-             .pos = playerPos,
+             .pos = { playerPos.x + 32, playerPos.y + 32 },
              .direction = dir,
              .speed = { 10 },
              .damage = { 10 },
@@ -82,5 +82,3 @@ struct InputSystem {
         }
     }
 };
-
-
