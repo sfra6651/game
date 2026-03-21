@@ -2,6 +2,7 @@
 
 #include "components.h"
 #include "ecs/world.h"
+#include "lib/utils.h"
 
 inline bool hasPysics(int id, World& world) {
     return world.getStore<Direction>().has(id)

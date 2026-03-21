@@ -31,25 +31,24 @@ int main() {
     int monitor = 0;
 #endif
     float osScale = getOsScaleFactor();
-    int mW = (int)roundf(GetMonitorWidth(monitor) * osScale);
-    int mH = (int)roundf(GetMonitorHeight(monitor) * osScale);
+    int monitorWidth = (int)roundf(GetMonitorWidth(monitor) * osScale);
+    int monitorHeight = (int)roundf(GetMonitorHeight(monitor) * osScale);
     Vector2 monitorPos = GetMonitorPosition(monitor);
     SetWindowPosition(monitorPos.x, monitorPos.y);
     ToggleBorderlessWindowed();
-    SetWindowSize(mW, mH);
+    SetWindowSize(monitorWidth, monitorHeight);
     ClearWindowState(FLAG_WINDOW_HIDDEN);
     SetTargetFPS(60);
 
     RenderTexture2D target = LoadRenderTexture(VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
 
-    println(osScale);
-    println("Monitor", mW, mH);
-    println("Window:", GetScreenWidth(), "Render:", GetRenderWidth());
-    println("Screen:", GetScreenWidth(), GetScreenHeight());
-    println("Render:", GetRenderWidth(), GetRenderHeight());
+    Camera2D camera = {};
+    camera.target = { (float)WORLD_WIDTH/2.0f, (float)WORLD_HEIGHT/2.0f };
+    camera.offset = { VIRTUAL_WIDTH/2.0f, VIRTUAL_HEIGHT/2.0f };
+    camera.zoom = 1.0f;
 
     World world{};
-    InputSystem inputSystem { world };
+    InputSystem inputSystem { world, camera,Vector2 {(float)monitorWidth/VIRTUAL_WIDTH, (float)monitorHeight/VIRTUAL_HEIGHT} };
     PhysicsSystem physicsSystem { world };
     AnimationSystem animationSystem { world };
     RenderingSystem renderingSystem { world };
@@ -59,13 +58,13 @@ int main() {
 
     Entity player = playerFactory(world, {
         .texture = {world.textureManager.get("space_marine_top_down.png")},
-        .pos = {300, 400},
+        .pos = {WORLD_WIDTH/2, WORLD_HEIGHT/2},
         .speed = { 5 },
     });
 
     Entity ork = enemyFactory(world, {
         .texture = {world.textureManager.get("ork_down.png")},
-        .pos = { 800, 800},
+        .pos = { WORLD_WIDTH/2 + 200, WORLD_HEIGHT/2 + 200},
         .speed = { 0 }
     });
 
@@ -85,20 +84,22 @@ int main() {
         renderingSystem.renderWorld();
     });
 
+
     while (!WindowShouldClose()) {
         BeginTextureMode(target);
-        ClearBackground(BLACK);
-
-        world.processInput();
-        world.processPhysics();
-        world.processCollisions();
-        world.processAnimations();
-        world.processRenders();
+            BeginMode2D(camera);
+                ClearBackground(BLACK);
+                world.processInput();
+                world.processPhysics();
+                world.processCollisions();
+                world.processAnimations();
+                world.processRenders();
+            EndMode2D();
         EndTextureMode();
 
         BeginDrawing();
         Rectangle src = {0, 0, VIRTUAL_WIDTH, -VIRTUAL_HEIGHT};
-        Rectangle dst = {0, 0, (float)mW, (float)mH};
+        Rectangle dst = {0, 0, (float)monitorWidth, (float)monitorHeight};
         DrawTexturePro(target.texture, src, dst, {0, 0}, 0, WHITE);
         EndDrawing();
     }

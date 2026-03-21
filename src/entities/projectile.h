@@ -8,7 +8,7 @@
 struct ProjectileConfig {
     Texture2D &texture;
     Owner owner {};
-    Position pos = {(int)VIRTUAL_WIDTH/2, (int)VIRTUAL_HEIGHT/2};
+    Position pos = {(int)WORLD_WIDTH/2, (int)WORLD_HEIGHT/2};
     Size size = {16, 8};
     Direction direction = { 0, 0 };
     Speed speed = { 0 };
