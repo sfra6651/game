@@ -12,6 +12,7 @@
 struct Damage { int v; };
 struct Direction { float x; float y; };
 struct Health { int v; };
+struct HealthBar { bool visible; };
 struct HitBox { Rectangle rect; };
 struct Owner { int id; };
 struct Position { float x; float y; };
@@ -23,6 +24,7 @@ using Components = std::tuple<
     Damage,
     Direction,
     Health,
+    HealthBar,
     HitBox,
     Owner,
     Position,

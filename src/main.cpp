@@ -68,6 +68,7 @@ int main() {
         .pos = { WORLD_WIDTH/2 + 200, WORLD_HEIGHT/2 + 200},
         .speed = { 0 },
         .hitBox = { WORLD_WIDTH/2 + 200, WORLD_HEIGHT/2 + 200, 64, 64},
+        .healthBar = { true },
     });
 
     world.registerInputSystem([&player, &inputSystem] () {

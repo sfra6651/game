@@ -11,6 +11,26 @@
 #include "shared/componentGroups.h"
 #include "lib/utils.h"
 
+inline void renderHealthBar(World& world, int id) {
+    if (!world.getStore<HealthBar>().has(id) || !world.getStore<Health>().has(id)) { return; };
+    Texture2D& texture = world.textureManager.get("health_bar_fill.png");
+    auto [x, y] = world.getStore<Position>().get(id);
+    auto [w, h] = world.getStore<Size>().get(id);
+    Rectangle src {
+        0.0f,
+        0.0f,
+        (float)texture.width,
+        (float)texture.height
+    };
+    Rectangle dest {
+        x - 20.0f,
+        y - 20.0f,
+        (float(w+40) * world.getStore<Health>().get(id).v/100),
+        (float)(10)
+    };
+    DrawTexturePro(texture, src, dest, {0, 0}, 0.0f, WHITE );
+}
+
 struct RenderingSystem{
     World& world;
     Camera2D& camera;
@@ -71,8 +91,9 @@ struct RenderingSystem{
                 (float)sizes.get(e_id).height
             };
             DrawTexturePro(renderables.get(e_id).texture , src, dest, {0, 0}, 0.0f, WHITE );
+            renderHealthBar(world, e_id);
 
-            bool drawHitbox = true;
+            bool drawHitbox = false;
             if (drawHitbox && world.getStore<HitBox>().has(e_id)) {
                DrawRectangleLinesEx(world.getStore<HitBox>().get(e_id).rect, 1, GREEN);
             }
