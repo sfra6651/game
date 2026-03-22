@@ -55,16 +55,7 @@ float getOsScaleFactor() {
 #include <CoreGraphics/CoreGraphics.h>
 
 float getOsScaleFactor() {
-    CGDirectDisplayID display = CGMainDisplayID();
-    CGDisplayModeRef mode = CGDisplayCopyDisplayMode(display);
-    if (!mode) return 1.0f;
-
-    size_t pixelWidth = CGDisplayModeGetPixelWidth(mode);
-    size_t logicalWidth = CGDisplayModeGetWidth(mode);
-    CGDisplayModeRelease(mode);
-
-    if (logicalWidth == 0) return 1.0f;
-    return (float)pixelWidth / (float)logicalWidth;
+   return 1.0f;
 }
 
 #elif defined(_WIN32)

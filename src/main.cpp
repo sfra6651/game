@@ -53,7 +53,6 @@ int main() {
 
     world.textureManager.load();
 
-    //println(std::filesystem::current_path().string());
     Texture2D tilesTexture = LoadTexture("./assets/textures/ork_world_tileset.png");
     std::fill(&world.tilemap[0][0], &world.tilemap[MAP_ROWS-1][MAP_COLS], 0);
 
@@ -84,7 +83,6 @@ int main() {
     world.registerRenderSystem([&renderingSystem, &tilesTexture]() {
         renderingSystem.renderWorld(tilesTexture);
     });
-
 
     while (!WindowShouldClose()) {
         BeginTextureMode(target);
