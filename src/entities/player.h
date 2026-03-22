@@ -12,7 +12,7 @@ struct PlayerConfig {
     Direction direction = { 0.f, 0.f };
     Speed speed = { 0 };
     Health health = { 100 };
-
+    HitBox hitBox = {};
 };
 
 inline Entity playerFactory(
@@ -25,5 +25,7 @@ inline Entity playerFactory(
     world.attach(player, world.getStore<Size>(), config.size);
     world.attach(player, world.getStore<Direction>(), config.direction);
     world.attach(player, world.getStore<Speed>(), config.speed);
+    world.attach(player, world.getStore<Health>(), config.health);
+    world.attach(player, world.getStore<HitBox>(), config.hitBox);
     return player;
 };

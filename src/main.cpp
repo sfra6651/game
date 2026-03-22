@@ -60,12 +60,14 @@ int main() {
         .texture = {world.textureManager.get("space_marine_top_down.png")},
         .pos = {WORLD_WIDTH/2, WORLD_HEIGHT/2},
         .speed = { 5 },
+        .hitBox = {WORLD_WIDTH/2, WORLD_HEIGHT/2, 64, 64},
     });
 
     Entity ork = enemyFactory(world, {
         .texture = {world.textureManager.get("ork_down.png")},
         .pos = { WORLD_WIDTH/2 + 200, WORLD_HEIGHT/2 + 200},
-        .speed = { 0 }
+        .speed = { 0 },
+        .hitBox = { WORLD_WIDTH/2 + 200, WORLD_HEIGHT/2 + 200, 64, 64},
     });
 
     world.registerInputSystem([&player, &inputSystem] () {

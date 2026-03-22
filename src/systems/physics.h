@@ -37,6 +37,11 @@ struct PhysicsSystem {
             };
             world.getStore<Position>().get(e_id) = new_pos;
 
+            if (world.getStore<HitBox>().has(e_id)) {
+                world.getStore<HitBox>().get(e_id).rect.x = new_pos.x;
+                world.getStore<HitBox>().get(e_id).rect.y = new_pos.y;
+            }
+
         };
        for (auto id : removals) {
            world.erase(world.entities.list[id]);

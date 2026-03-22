@@ -77,13 +77,13 @@ inline void handleMouseLeftClick(World& world, Entity& e, const Vector2& wMouse)
          .direction = dir,
          .speed = { 10 },
          .damage = { 10 },
+         .hitBox = { playerPos.x + 32, playerPos.y + 32, 16, 8 }
      });
     }
 }
 
 inline void handleCameraMovement(Camera2D& camera, const Vector2& vMouse) {
     const float mvSpd = 10.0f;
-    const float nMvSpd = 7.1f;
 
     //arrow keys
     if (IsKeyDown(KEY_RIGHT)) camera.target.x += mvSpd;

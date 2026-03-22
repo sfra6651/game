@@ -71,6 +71,11 @@ struct RenderingSystem{
                 (float)sizes.get(e_id).height
             };
             DrawTexturePro(renderables.get(e_id).texture , src, dest, {0, 0}, 0.0f, WHITE );
+
+            bool drawHitbox = true;
+            if (drawHitbox && world.getStore<HitBox>().has(e_id)) {
+               DrawRectangleLinesEx(world.getStore<HitBox>().get(e_id).rect, 1, GREEN);
+            }
         };
     }
 

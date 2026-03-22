@@ -12,6 +12,7 @@ struct EnemyConfig {
     Direction direction = { 0.f, 0.f };
     Speed speed = { 0 };
     Health health = { 100 };
+    HitBox hitBox = {};
 };
 
 inline Entity enemyFactory(
@@ -25,5 +26,6 @@ inline Entity enemyFactory(
     world.attach(enemy, world.getStore<Direction>(), config.direction);
     world.attach(enemy, world.getStore<Speed>(), config.speed);
     world.attach(enemy, world.getStore<Health>(), config.health);
+    world.attach(enemy , world.getStore<HitBox>(), config.hitBox);
     return enemy;
 };

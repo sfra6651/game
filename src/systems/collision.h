@@ -102,9 +102,8 @@ struct CollisionSystem {
                 continue;
             }
             Position pos = world.getStore<Position>().get(eId);
-            Size size = world.getStore<Size>().get(eId);
-            tree.insert(eId, Rectangle{(float)pos.x, (float)pos.y,
-                                       (float)size.width, (float)size.height});
+            HitBox& hitBox = world.getStore<HitBox>().get(eId);
+            tree.insert(eId, Rectangle{hitBox.rect.x, hitBox.rect.y, hitBox.rect.width, hitBox.rect.height});
 
         }
 
@@ -115,9 +114,8 @@ struct CollisionSystem {
             if (!collidable(eId, world)) continue;
 
             Position pos = world.getStore<Position>().get(eId);
-            Size size = world.getStore<Size>().get(eId);
-            Rectangle rect{(float)pos.x, (float)pos.y,
-                            (float)size.width, (float)size.height};
+            HitBox hitBox = world.getStore<HitBox>().get(eId);
+            Rectangle rect{hitBox.rect.x, hitBox.rect.y, hitBox.rect.width, hitBox.rect.height};
 
             std::vector<int> nearby{};
             tree.query(rect, nearby);   // only entities in same region
@@ -126,12 +124,7 @@ struct CollisionSystem {
                 if (other_id == eId) continue;
                 if (world.getStore<Owner>().has(other_id)) continue;
 
-                Rectangle otherRect{world.getStore<Position>().get(other_id).x,
-                                     world.getStore<Position>().get(other_id).y,
-                                     (float)world.getStore<Size>().get(other_id).width,
-                                     (float)world.getStore<Size>().get(other_id).height};
-
-                if (CheckCollisionRecs(rect, otherRect)) {
+                if (CheckCollisionRecs(rect, world.getStore<HitBox>().get(other_id).rect)) {
                     handleCollision(eId, other_id);
                     break;
                 }
@@ -144,6 +137,17 @@ struct CollisionSystem {
     }
 
     void handleCollision(int e_id, int collision_e_id) {
+        ComponentStore<Owner> ownerStore = world.getStore<Owner>();
+        if (ownerStore.has(collision_e_id)) {
+            if (ownerStore.get(collision_e_id).id == e_id) {
+                return;
+            }
+        }
+        if (ownerStore.has(e_id)) {
+            if (ownerStore.get(e_id).id == collision_e_id) {
+                return;
+            }
+        }
         if (world.getStore<Damage>().has(e_id) && world.getStore<Health>().has(collision_e_id)) {
             resolveDamage(e_id, collision_e_id);
         }

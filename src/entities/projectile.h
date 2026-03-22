@@ -13,6 +13,7 @@ struct ProjectileConfig {
     Direction direction = { 0, 0 };
     Speed speed = { 0 };
     Damage damage = { 10 };
+    HitBox hitBox {};
 };
 
 inline Entity projectileFactory (
@@ -28,5 +29,6 @@ inline Entity projectileFactory (
     world.attach(projectile, world.getStore<Direction>(), config.direction);
     world.attach(projectile, world.getStore<Speed>(), config.speed);
     world.attach(projectile, world.getStore<Damage>(), config.damage);
+    world.attach(projectile, world.getStore<HitBox>(), config.hitBox);
     return projectile;
 };
