@@ -89,11 +89,11 @@ int main() {
 
     while (!WindowShouldClose()) {
         BeginTextureMode(target);
+            world.processInput();
+            world.processPhysics();
+            world.processCollisions();
             BeginMode2D(camera);
                 ClearBackground(BLACK);
-                world.processInput();
-                world.processPhysics();
-                world.processCollisions();
                 world.processAnimations();
                 world.processRenders();
             EndMode2D();

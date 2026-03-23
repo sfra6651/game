@@ -4,7 +4,7 @@
 #include "ecs/world.h"
 #include "lib/utils.h"
 
-inline bool hasPysics(int id, World& world) {
+inline bool hasPhysics(int id, World& world) {
     return world.getStore<Direction>().has(id)
                 && world.getStore<Position>().has(id)
                 && world.getStore<Speed>().has(id);

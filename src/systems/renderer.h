@@ -16,6 +16,7 @@ inline void renderHealthBar(World& world, int id) {
     Texture2D& texture = world.textureManager.get("health_bar_fill.png");
     auto [x, y] = world.getStore<Position>().get(id);
     auto [w, h] = world.getStore<Size>().get(id);
+
     Rectangle src {
         0.0f,
         0.0f,

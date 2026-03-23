@@ -21,7 +21,7 @@ struct PhysicsSystem {
             //guard
             if (e_id == REMOVED_ENTITY_ID
                 || !world.getStore<Direction>().has(e_id)
-                || !hasPysics(e_id, world)) {
+                || !hasPhysics(e_id, world)) {
                 continue;
             };
             Direction dir = world.getStore<Direction>().get(e_id);

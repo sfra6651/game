@@ -4,7 +4,7 @@
 
 ## Learning Project
 
-This is a learning project for game development. When the user asks how to do something, **guide them through the approach first** rather than jumping straight to implementation. Explain the concepts, trade-offs, and reasoning so they can make informed decisions and learn. Only write code when explicitly asked to implement.
+The goal is a fully playable, professional-quality game — but built as a learning journey. The user wants to understand what it takes to build a game at that level. When they ask how to do something, **guide them through the approach first** rather than jumping straight to implementation. Explain the concepts, trade-offs, and reasoning so they can make informed decisions and learn. Only write code when explicitly asked to implement.
 
 ## Build & Run
 

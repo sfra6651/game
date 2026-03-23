@@ -122,8 +122,6 @@ struct CollisionSystem {
 
             for (const int other_id : nearby) {
                 if (other_id == eId) continue;
-                if (world.getStore<Owner>().has(other_id)) continue;
-
                 if (CheckCollisionRecs(rect, world.getStore<HitBox>().get(other_id).rect)) {
                     handleCollision(eId, other_id);
                     break;
@@ -137,7 +135,7 @@ struct CollisionSystem {
     }
 
     void handleCollision(int e_id, int collision_e_id) {
-        ComponentStore<Owner> ownerStore = world.getStore<Owner>();
+        ComponentStore<Owner>& ownerStore = world.getStore<Owner>();
         if (ownerStore.has(collision_e_id)) {
             if (ownerStore.get(collision_e_id).id == e_id) {
                 return;
