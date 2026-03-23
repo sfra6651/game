@@ -5,8 +5,9 @@
 #include "raylib.h"
 
 
+#include "components/abilities.h"
+#include "components/entity.h"
 #include "entities/player.h"
-#include "shared/entity.h"
 #include "systems/collision.h"
 #include "systems/animation.h"
 #include "systems/input.h"
@@ -17,6 +18,7 @@
 #include "resources/textureManager.h"
 #include "lib/utils.h"
 #include "lib/osScaling.h"
+
 
 
 int main() {
@@ -35,7 +37,7 @@ int main() {
     ToggleBorderlessWindowed();
     SetWindowSize(monitorWidth, monitorHeight);
     ClearWindowState(FLAG_WINDOW_HIDDEN);
-    SetTargetFPS(60);
+    SetTargetFPS(165);
 
     RenderTexture2D target = LoadRenderTexture(VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
 
@@ -57,18 +59,20 @@ int main() {
     std::fill(&world.tilemap[0][0], &world.tilemap[MAP_ROWS-1][MAP_COLS], 0);
 
     Entity player = playerFactory(world, {
+        .abilities = { {1.0f, 0, dash, KEY_SPACE } },
         .texture = {world.textureManager.get("space_marine_top_down.png")},
         .pos = {WORLD_WIDTH/2, WORLD_HEIGHT/2},
         .speed = { 5 },
         .hitBox = {WORLD_WIDTH/2, WORLD_HEIGHT/2, 64, 64},
     });
 
+
     Entity ork = enemyFactory(world, {
         .texture = {world.textureManager.get("ork_down.png")},
         .pos = { WORLD_WIDTH/2 + 200, WORLD_HEIGHT/2 + 200},
         .speed = { 0 },
-        .hitBox = { WORLD_WIDTH/2 + 200, WORLD_HEIGHT/2 + 200, 64, 64},
         .healthBar = { true },
+        .hitBox = { WORLD_WIDTH/2 + 200, WORLD_HEIGHT/2 + 200, 64, 64},
     });
 
     world.registerInputSystem([&player, &inputSystem] () {
@@ -87,16 +91,27 @@ int main() {
         renderingSystem.renderWorld(tilesTexture);
     });
 
+    const float TICK_RATE = 1.0f / 60.0f;
+    float accumulator = 0.0f;
     while (!WindowShouldClose()) {
-        BeginTextureMode(target);
-            world.processInput();
+        float frameTime = GetFrameTime();
+        accumulator += frameTime;
+        world.processInput();
+        if (accumulator >= TICK_RATE) {
             world.processPhysics();
             world.processCollisions();
+            accumulator -= TICK_RATE;
+        }
+        if (accumulator > TICK_RATE) {
+            accumulator = TICK_RATE;
+        }
+        BeginTextureMode(target);
             BeginMode2D(camera);
                 ClearBackground(BLACK);
                 world.processAnimations();
                 world.processRenders();
             EndMode2D();
+        DrawText(TextFormat("FPS: %d", GetFPS()), 10, VIRTUAL_HEIGHT - 30, 20, WHITE);
         EndTextureMode();
 
         BeginDrawing();

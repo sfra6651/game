@@ -2,8 +2,8 @@
 
 #include <functional>
 
+#include "components/components.h"
 #include "resources/textureManager.h"
-#include "shared/components.h"
 
 #define TILE_SIZE 64 
 #define MAP_COLS  100

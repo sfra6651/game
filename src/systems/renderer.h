@@ -5,10 +5,10 @@
 #include <cmath>
 #include <unordered_map>
 
-#include "shared/components.h"
+#include "components/components.h"
+#include "components/componentGroups.h"
 #include "entities/projectile.h"
 #include "ecs/world.h"
-#include "shared/componentGroups.h"
 #include "lib/utils.h"
 
 inline void renderHealthBar(World& world, int id) {

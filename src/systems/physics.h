@@ -2,9 +2,9 @@
 
 #include <cmath>
 
-#include "shared/components.h"
+#include "components/components.h"
+#include "components/componentGroups.h"
 #include "ecs/world.h"
-#include "shared/componentGroups.h"
 
 enum CollisionResult {
     DESTROY_SELF,

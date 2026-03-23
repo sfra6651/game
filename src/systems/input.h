@@ -5,7 +5,7 @@
 #include <cmath>
 #include <unordered_map>
 
-#include "shared/components.h"
+#include "components/components.h"
 #include "entities/projectile.h"
 #include "ecs/world.h"
 #include "lib/utils.h"
@@ -83,6 +83,7 @@ inline void handleMouseLeftClick(World& world, Entity& e, const Vector2& wMouse)
 }
 
 inline void handleCameraMovement(Camera2D& camera, const Vector2& vMouse) {
+    if (!IsCursorOnScreen()) { return; }
     const float mvSpd = 10.0f;
 
     //arrow keys

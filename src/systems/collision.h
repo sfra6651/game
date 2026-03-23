@@ -5,7 +5,7 @@
 #include "iostream"
 
 #include "ecs/world.h"
-#include "shared/componentGroups.h"
+#include "components/componentGroups.h"
 
 struct QuadTree {
       Rectangle bounds;

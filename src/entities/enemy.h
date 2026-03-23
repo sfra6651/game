@@ -2,7 +2,7 @@
 
 #include "raylib.h"
 
-#include "shared/components.h"
+#include "components/components.h"
 #include "ecs/world.h"
 
 struct EnemyConfig {

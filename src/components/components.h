@@ -3,17 +3,27 @@
 #include "raylib.h"
 
 #include <algorithm>
+#include <cassert>
+#include <functional>
 #include <utility>
 #include <vector>
-#include <cassert>
 
-#include "shared/entity.h"
+#include "components/entity.h"
 
+struct World;
+
+struct Ability { 
+    float cd;
+    float cdProg;
+    void (*effect)(World&, int);
+    int keyBind;
+};
 struct Damage { int v; };
 struct Direction { float x; float y; };
 struct Health { int v; };
 struct HealthBar { bool visible; };
 struct HitBox { Rectangle rect; };
+struct LifeTime { float remaining; };
 struct Owner { int id; };
 struct Position { float x; float y; };
 struct Renderable { Texture2D texture; };
@@ -21,11 +31,13 @@ struct Speed { int v; };
 struct Size { int width; int height; };
 
 using Components = std::tuple<
+    Ability,
     Damage,
     Direction,
     Health,
     HealthBar,
     HitBox,
+    LifeTime,
     Owner,
     Position,
     Renderable,
