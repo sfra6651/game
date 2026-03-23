@@ -59,7 +59,7 @@ int main() {
     std::fill(&world.tilemap[0][0], &world.tilemap[MAP_ROWS-1][MAP_COLS], 0);
 
     Entity player = playerFactory(world, {
-        .abilities = { {1.0f, 0, dash, KEY_SPACE } },
+        .abilities = { {1.0f, 0, 10.0, dash, KEY_SPACE } },
         .texture = {world.textureManager.get("space_marine_top_down.png")},
         .pos = {WORLD_WIDTH/2, WORLD_HEIGHT/2},
         .speed = { 5 },
@@ -91,7 +91,6 @@ int main() {
         renderingSystem.renderWorld(tilesTexture);
     });
 
-    const float TICK_RATE = 1.0f / 60.0f;
     float accumulator = 0.0f;
     while (!WindowShouldClose()) {
         float frameTime = GetFrameTime();

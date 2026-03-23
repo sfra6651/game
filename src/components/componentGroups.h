@@ -17,3 +17,7 @@ inline bool collidable(int id, World& world) {
 inline bool renderable(int id, World& world) {
     return world.getStore<Renderable>().has(id) && world.getStore<Position>().has(id) && world.getStore<Size>().has(id);
 }
+
+inline bool hasLifeTime(int id, World& world) {
+    return world.getStore<LifeTime>().has(id);
+};

@@ -15,6 +15,7 @@ struct World;
 struct Ability { 
     float cd;
     float cdProg;
+    float duration;
     void (*effect)(World&, int);
     int keyBind;
 };
@@ -23,7 +24,7 @@ struct Direction { float x; float y; };
 struct Health { int v; };
 struct HealthBar { bool visible; };
 struct HitBox { Rectangle rect; };
-struct LifeTime { float remaining; };
+struct LifeTime { float remaining; void (*onExpire)(); };
 struct Owner { int id; };
 struct Position { float x; float y; };
 struct Renderable { Texture2D texture; };

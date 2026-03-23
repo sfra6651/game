@@ -14,6 +14,8 @@
 #define VIRTUAL_WIDTH 1920
 #define VIRTUAL_HEIGHT 1080
 
+#define TICK_RATE (1.0f / 60.0f)
+
 
 
 struct World {
