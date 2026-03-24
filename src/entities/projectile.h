@@ -14,6 +14,7 @@ struct ProjectileConfig {
     Speed speed = { 0 };
     Damage damage = { 10 };
     HitBox hitBox {};
+    CollisionBehavour collisionBehavour = { DEALS_DAMAGE, true };
 };
 
 inline Entity projectileFactory (
@@ -30,5 +31,6 @@ inline Entity projectileFactory (
     world.attach(projectile, world.getStore<Speed>(), config.speed);
     world.attach(projectile, world.getStore<Damage>(), config.damage);
     world.attach(projectile, world.getStore<HitBox>(), config.hitBox);
+    world.attach(projectile, world.getStore<CollisionBehavour>(), config.collisionBehavour);
     return projectile;
 };

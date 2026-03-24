@@ -12,39 +12,58 @@
 
 struct World;
 
+enum CollisionType {
+    DEFAULT,
+    DEALS_DAMAGE,
+};
+
+enum UiElementType {
+    HEALTH_BAR,
+};
+
 struct Ability { 
     float cd;
     float cdProg;
     float duration;
-    void (*effect)(World&, int);
+    void (*effect)(World&, Ability&);
     int keyBind;
 };
+struct AnchorPoint { float x; float y; };
+struct CollisionBehavour { CollisionType type = DEFAULT; bool destroyOnCollide = false; };
 struct Damage { int v; };
 struct Direction { float x; float y; };
-struct Health { int v; };
-struct HealthBar { bool visible; };
+struct Health { int max; int current; };
 struct HitBox { Rectangle rect; };
-struct LifeTime { float remaining; void (*onExpire)(); };
+struct LifeTime { 
+    float remaining;
+    void (*onExpire)(World&, const Entity&);
+};
 struct Owner { int id; };
 struct Position { float x; float y; };
 struct Renderable { Texture2D texture; };
 struct Speed { int v; };
 struct Size { int width; int height; };
+struct UiElement { UiElementType type; bool visible; };
+struct VelocityOveride { float x; float y; int speed; };
 
 using Components = std::tuple<
     Ability,
+    AnchorPoint,
+    CollisionBehavour,
     Damage,
     Direction,
     Health,
-    HealthBar,
     HitBox,
     LifeTime,
     Owner,
     Position,
     Renderable,
     Speed,
-    Size
+    Size,
+    UiElement,
+    VelocityOveride
 >;
+
 static constexpr int MaxComponents = std::tuple_size_v<Components>;
 
 

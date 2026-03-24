@@ -2,6 +2,7 @@
 
 #include <cmath>
 
+#include "components/components.h"
 #include "iostream"
 
 #include "ecs/world.h"
@@ -88,10 +89,6 @@ struct CollisionSystem {
     std::vector<QuadTree> quadTrees;
     std::vector<int> removals {};
 
-    void x() {
-
-    };
-
     void processCollisions() {
         removals.clear();
         QuadTree tree{Rectangle{0, 0, WORLD_WIDTH, WORLD_HEIGHT}};
@@ -134,29 +131,25 @@ struct CollisionSystem {
         }
     }
 
-    void handleCollision(int e_id, int collision_e_id) {
+    void handleCollision(int e_id, int other_e_id) {
+        ComponentStore<Damage>& damageStore = world.getStore<Damage>();
         ComponentStore<Owner>& ownerStore = world.getStore<Owner>();
-        if (ownerStore.has(collision_e_id)) {
-            if (ownerStore.get(collision_e_id).id == e_id) {
-                return;
-            }
+        ComponentStore<CollisionBehavour>& behavourStore = world.getStore<CollisionBehavour>();
+
+        if (damageStore.has(e_id)) {
+             resolveDamage(e_id, other_e_id);           
         }
-        if (ownerStore.has(e_id)) {
-            if (ownerStore.get(e_id).id == collision_e_id) {
-                return;
-            }
+        if (behavourStore.get(e_id).destroyOnCollide == true) {
+            removals.push_back(e_id);
         }
-        if (world.getStore<Damage>().has(e_id) && world.getStore<Health>().has(collision_e_id)) {
-            resolveDamage(e_id, collision_e_id);
-        }
+
     }
 
-    void resolveDamage(int damaging_id, int target_id) {
-        world.getStore<Health>().get(target_id).v -= world.getStore<Damage>().get(damaging_id).v;
-        if (world.getStore<Health>().get(target_id).v <= 0) {
+    void resolveDamage(int e_id, int target_id) {
+        world.getStore<Health>().get(target_id).current -= world.getStore<Damage>().get(e_id).v;
+        if (world.getStore<Health>().get(target_id).current <= 0) {
             removals.push_back(target_id);
         }
-        removals.push_back(damaging_id);
     }
 };
 

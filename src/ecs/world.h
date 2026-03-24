@@ -30,13 +30,22 @@ struct World {
     std::function<void()> processAnimations;
     std::function<void()> processRenders;
     std::function<void()> processCollisions;
+    std::function<void()> processLifeTimes;
 
     void registerInputSystem(const std::function<void()>& fn) {
         processInput = fn;
     }
 
+    void registerLifeTimeSystem(const std::function<void()>& fn) {
+        processLifeTimes = fn;
+    }
+
     void registerPhysicsSystem(const std::function<void()>& fn) {
         processPhysics = fn;
+    }
+
+    void registerCollisionSystem(const std::function<void()>& fn) {
+        processCollisions = fn;
     }
 
     void registerAnimationSystem(const std::function<void()>& fn) {
@@ -47,9 +56,6 @@ struct World {
         processRenders = fn;
     }
 
-    void registerCollisionSystem(const std::function<void()>& fn) {
-        processCollisions = fn;
-    }
 
     template<typename T>
     ComponentStore<T>& getStore() {
@@ -57,14 +63,26 @@ struct World {
     }
 
     template<typename T>
-    void attach(Entity entity, ComponentStore<T> &store, T component) {
+    void attach(const Entity& entity, ComponentStore<T> &store, T component) {
         store.add(entity.id, component);
     }
 
     void erase(Entity entity) {
+        // Remove any entities owned by this one (e.g., health bars)
+        auto& owners = getStore<Owner>();
+        for (int i = owners.entities.size() - 1; i >= 0; i--) {                                                                      
+            if (owners.dense[i].id == entity.id) {
+                int childId = owners.entities[i];
+                erase(entities.get(childId));
+            }
+        }
+        // remove all components for the entity
         std::apply([&](auto&... S) {
             ((S.has(entity.id) ? (S.remove(entity.id), 0) : 0), ...);
         }, stores);
+
+        //remove entity
         entities.remove(entity.id);
+
     }
 };

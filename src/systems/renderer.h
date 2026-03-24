@@ -11,25 +11,42 @@
 #include "ecs/world.h"
 #include "lib/utils.h"
 
-inline void renderHealthBar(World& world, int id) {
-    if (!world.getStore<HealthBar>().has(id) || !world.getStore<Health>().has(id)) { return; };
-    Texture2D& texture = world.textureManager.get("health_bar_fill.png");
-    auto [x, y] = world.getStore<Position>().get(id);
-    auto [w, h] = world.getStore<Size>().get(id);
+inline void renderUiElement(World& world, int id) {
+    const UiElement& element = world.getStore<UiElement>().get(id);
+    ComponentStore<Health> healths = world.getStore<Health>();
+    ComponentStore<AnchorPoint> anchorPoints = world.getStore<AnchorPoint>();
+    ComponentStore<Owner> owners = world.getStore<Owner>();
+    ComponentStore<Position> positions = world.getStore<Position>();
+    ComponentStore<Renderable> renderables = world.getStore<Renderable>();
+    ComponentStore<Size> sizes = world.getStore<Size>();
+    if (!element.visible ||
+        !positions.has(owners.get(id).id)
+    ) {
+        return;
+    }
 
-    Rectangle src {
-        0.0f,
-        0.0f,
-        (float)texture.width,
-        (float)texture.height
-    };
-    Rectangle dest {
-        x - 20.0f,
-        y - 20.0f,
-        (float(w+40) * world.getStore<Health>().get(id).v/100),
-        (float)(10)
-    };
-    DrawTexturePro(texture, src, dest, {0, 0}, 0.0f, WHITE );
+    int ownerId = owners.get(id).id;
+    
+    if (element.type == HEALTH_BAR &&
+        healths.has(ownerId) &&
+        anchorPoints.has(id)
+    ) { 
+        auto [offsetX, offsetY] = anchorPoints.get(id);
+        auto [parentX, parentY] = positions.get(ownerId);
+        Rectangle src {
+            0.0f,
+            0.0f,
+            (float)renderables.get(id).texture.width,
+            (float)renderables.get(id).texture.height,
+        };      
+        Rectangle dest {
+            parentX + offsetX,
+            parentY + offsetY,
+            (float)sizes.get(id).width * healths.get(ownerId).current / healths.get(ownerId).max,
+            (float)sizes.get(id).height,
+        };
+        DrawTexturePro(renderables.get(id).texture, src, dest, {0, 0}, 0.0f, WHITE );
+    }
 }
 
 struct RenderingSystem{
@@ -71,14 +88,22 @@ struct RenderingSystem{
        ComponentStore<Position> &positions = world.getStore<Position>();
        ComponentStore<Renderable> &renderables = world.getStore<Renderable>();
        ComponentStore<Size> &sizes = world.getStore<Size>();
+        ComponentStore<UiElement>& uiElements = world.getStore<UiElement>();
         int count = entities.count;
         for (int i = 0; i < count; i++) {
             int e_id = entities.list[i].id;
             if  (e_id == REMOVED_ENTITY_ID) { continue; };
+
             if (!renderable(e_id, world))
             {
                 continue;
             }
+
+            if (uiElements.has(e_id)) {
+                renderUiElement(world, e_id);
+                continue;
+            }
+
             Rectangle src {
                 0,
                 0,
@@ -91,13 +116,13 @@ struct RenderingSystem{
                 (float)sizes.get(e_id).width,
                 (float)sizes.get(e_id).height
             };
-            DrawTexturePro(renderables.get(e_id).texture , src, dest, {0, 0}, 0.0f, WHITE );
-            renderHealthBar(world, e_id);
+            renderUiElement(world, e_id);
 
             bool drawHitbox = false;
             if (drawHitbox && world.getStore<HitBox>().has(e_id)) {
                DrawRectangleLinesEx(world.getStore<HitBox>().get(e_id).rect, 1, GREEN);
             }
+            DrawTexturePro(renderables.get(e_id).texture , src, dest, {0, 0}, 0.0f, WHITE );
         };
     }
 

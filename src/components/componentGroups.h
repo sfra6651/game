@@ -11,7 +11,7 @@ inline bool hasPhysics(int id, World& world) {
 };
 
 inline bool collidable(int id, World& world) {
-    return world.getStore<Position>().has(id) && world.getStore<HitBox>().has(id);
+    return world.getStore<Position>().has(id) && world.getStore<HitBox>().has(id) && world.getStore<CollisionBehavour>().has(id);
 };
 
 inline bool renderable(int id, World& world) {

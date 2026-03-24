@@ -7,12 +7,14 @@
 
 #include "components/abilities.h"
 #include "components/entity.h"
+#include "components/abilities.h"
 #include "entities/player.h"
 #include "systems/collision.h"
 #include "systems/animation.h"
 #include "systems/input.h"
 #include "systems/physics.h"
 #include "systems/renderer.h"
+#include "systems/lifeTime.h"
 #include "ecs/world.h"
 #include "entities/enemy.h"
 #include "resources/textureManager.h"
@@ -49,6 +51,7 @@ int main() {
     World world{};
     InputSystem inputSystem { world, camera,Vector2 {(float)monitorWidth/VIRTUAL_WIDTH, (float)monitorHeight/VIRTUAL_HEIGHT} };
     PhysicsSystem physicsSystem { world };
+    LifeTimeSystem lifeTimeSystem { world };
     AnimationSystem animationSystem { world };
     RenderingSystem renderingSystem { world, camera };
     CollisionSystem collisionSystem { world };
@@ -59,24 +62,33 @@ int main() {
     std::fill(&world.tilemap[0][0], &world.tilemap[MAP_ROWS-1][MAP_COLS], 0);
 
     Entity player = playerFactory(world, {
-        .abilities = { {1.0f, 0, 10.0, dash, KEY_SPACE } },
+//        .abilities = { {1.0f, 0, 10.0, dash, KEY_SPACE } },
         .texture = {world.textureManager.get("space_marine_top_down.png")},
         .pos = {WORLD_WIDTH/2, WORLD_HEIGHT/2},
         .speed = { 5 },
         .hitBox = {WORLD_WIDTH/2, WORLD_HEIGHT/2, 64, 64},
     });
+   // Ability dashAbility {1.0f, 0, 10.0, dash, KEY_SPACE, player};
 
 
-    Entity ork = enemyFactory(world, {
+    EnemyBuilder orkBuilder = {
         .texture = {world.textureManager.get("ork_down.png")},
         .pos = { WORLD_WIDTH/2 + 200, WORLD_HEIGHT/2 + 200},
         .speed = { 0 },
-        .healthBar = { true },
         .hitBox = { WORLD_WIDTH/2 + 200, WORLD_HEIGHT/2 + 200, 64, 64},
+    };
+    Entity ork = orkBuilder.attachToWorld(world);
+    orkBuilder.attachHealthBar(world, {
+        .texture = world.textureManager.get("health_bar_fill.png"),
+        .owner = ork.id
     });
 
     world.registerInputSystem([&player, &inputSystem] () {
         inputSystem.processInput(player);
+    });
+
+    world.registerLifeTimeSystem([&world, &lifeTimeSystem] () {
+        lifeTimeSystem.processLifeTimes();
     });
     world.registerPhysicsSystem([&physicsSystem]() {
         physicsSystem.processPhysics();
@@ -110,7 +122,7 @@ int main() {
                 world.processAnimations();
                 world.processRenders();
             EndMode2D();
-        DrawText(TextFormat("FPS: %d", GetFPS()), 10, VIRTUAL_HEIGHT - 30, 20, WHITE);
+        DrawText(TextFormat("FPS: %d", GetFPS()), 10, 0, 20, WHITE);
         EndTextureMode();
 
         BeginDrawing();
