@@ -2,6 +2,7 @@
 #include <functional>
 #include <cstring>
 
+#include "components/components.h"
 #include "raylib.h"
 
 
@@ -62,25 +63,35 @@ int main() {
     std::fill(&world.tilemap[0][0], &world.tilemap[MAP_ROWS-1][MAP_COLS], 0);
 
     Entity player = playerFactory(world, {
-//        .abilities = { {1.0f, 0, 10.0, dash, KEY_SPACE } },
         .texture = {world.textureManager.get("space_marine_top_down.png")},
-        .pos = {WORLD_WIDTH/2, WORLD_HEIGHT/2},
+        .pos = {WORLD_WIDTH/2.0f, WORLD_HEIGHT/2.0f},
         .speed = { 5 },
-        .hitBox = {WORLD_WIDTH/2, WORLD_HEIGHT/2, 64, 64},
+        .hitBox = {WORLD_WIDTH/2.0f, WORLD_HEIGHT/2.0f, 64, 64},
     });
-   // Ability dashAbility {1.0f, 0, 10.0, dash, KEY_SPACE, player};
+    Ability dashAbility = {
+        .cd = 10.0f,
+        .cdProg = 0.0f,
+        .duration = 2.0f,
+        .effect = dash,
+        .parent = player.id
+    };
+
+    world.attach(player, world.getStore<AbilitySet>(), {
+        .ability = { dashAbility },
+        .count = 1
+    });
 
 
     EnemyBuilder orkBuilder = {
         .texture = {world.textureManager.get("ork_down.png")},
-        .pos = { WORLD_WIDTH/2 + 200, WORLD_HEIGHT/2 + 200},
+        .pos = { WORLD_WIDTH/2.0f + 200, WORLD_HEIGHT/2.0f + 200},
         .speed = { 0 },
-        .hitBox = { WORLD_WIDTH/2 + 200, WORLD_HEIGHT/2 + 200, 64, 64},
+        .hitBox = { WORLD_WIDTH/2.0f + 200, WORLD_HEIGHT/2.0f + 200, 64, 64},
     };
     Entity ork = orkBuilder.attachToWorld(world);
     orkBuilder.attachHealthBar(world, {
         .texture = world.textureManager.get("health_bar_fill.png"),
-        .owner = ork.id
+        .owner = { ork.id }
     });
 
     world.registerInputSystem([&player, &inputSystem] () {

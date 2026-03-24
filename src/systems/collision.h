@@ -136,7 +136,7 @@ struct CollisionSystem {
         ComponentStore<Owner>& ownerStore = world.getStore<Owner>();
         ComponentStore<CollisionBehavour>& behavourStore = world.getStore<CollisionBehavour>();
 
-        if (damageStore.has(e_id)) {
+        if (damageStore.has(e_id) && behavourStore.get(e_id).type == DEALS_DAMAGE) {
              resolveDamage(e_id, other_e_id);           
         }
         if (behavourStore.get(e_id).destroyOnCollide == true) {

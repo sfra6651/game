@@ -6,7 +6,6 @@
 #include "ecs/world.h"
 
 struct PlayerConfig {
-    //Ability abilities[5] {};
     Texture2D &texture;
     Position pos = { WORLD_WIDTH/2.0f, WORLD_HEIGHT/2.0f };
     Size size = { 64, 64 };
@@ -28,11 +27,5 @@ inline Entity playerFactory(
     world.attach(player, world.getStore<Speed>(), config.speed);
     world.attach(player, world.getStore<Health>(), config.health);
     world.attach(player, world.getStore<HitBox>(), config.hitBox);
-    //for (int i = 0; i < 5; i++) {
-    //    if (config.abilities[i].effect) {
-    //        Entity abilityEntity = world.entities.create();
-    //        world.attach(abilityEntity, world.getStore<Ability>(), config.abilities[i]);
-    //    }
-    //}
     return player;
 };

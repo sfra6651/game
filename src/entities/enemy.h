@@ -10,8 +10,8 @@ struct HealthBarConfig {
     Texture2D& texture;
     Owner owner;
     Position pos = { 0.0f, 0.0f };
-    AnchorPoint anchorPoint = { -40, -40}; 
-    Size size = { 88, 20 };
+    AnchorPoint anchorPoint = { -10, -20}; 
+    Size size = { 84, 10 };
     UiElement uiElement = {HEALTH_BAR ,true};
 };
 

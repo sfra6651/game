@@ -16,6 +16,7 @@ struct PhysicsSystem {
         ComponentStore<Speed>& speeds = world.getStore<Speed>();
         ComponentStore<AnchorPoint>& anchorPoints = world.getStore<AnchorPoint>();
         ComponentStore<Owner>& owners = world.getStore<Owner>();
+        ComponentStore<VelocityOveride>& velocityOverides = world.getStore<VelocityOveride>();
 
         int count = world.entities.count;
         std::vector<int> removals {};
@@ -33,8 +34,15 @@ struct PhysicsSystem {
             Position pos = positions.get(e_id);
             Speed speed = speeds.get(e_id);
 
-            Position new_pos {pos.x + dir.x * speed.v, pos.y + dir.y * speed.v};
+            Position new_pos {};
+            if (velocityOverides.has(e_id)) {
+                auto [x, y, speed] = velocityOverides.get(e_id);
+                new_pos = {pos.x + x * speed, pos.y + y * speed };
+            } else {
+                new_pos = {pos.x + dir.x * speed.v, pos.y + dir.y * speed.v};
+            }
 
+            //remove on leaving world TODO: add collision or something for this
             if (std::abs(new_pos.x) >= WORLD_WIDTH ||
                 std::abs(new_pos.y) >= WORLD_HEIGHT* 2) {
                 removals.push_back(i);

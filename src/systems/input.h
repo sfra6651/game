@@ -10,7 +10,7 @@
 #include "ecs/world.h"
 #include "lib/utils.h"
 
-inline Direction calculateDirectionVec(Position origin, Position target){
+inline Vector2 calculateDirectionVec(Position origin, Position target){
     float dx = target.x - origin.x;
     float dy = target.y - origin.y;
     float len = std::sqrt(dx*dx + dy*dy);
@@ -69,12 +69,12 @@ inline void handleMouseLeftClick(World& world, Entity& e, const Vector2& wMouse)
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
         Position playerPos = world.getStore<Position>().get(e.id);
         Texture2D bulletTexture = world.textureManager.get("bullet.png");
-        Direction dir = calculateDirectionVec({ playerPos.x + 32, playerPos.y + 32 }, { wMouse.x, wMouse.y});
+        Vector2 dir = calculateDirectionVec({ playerPos.x + 32, playerPos.y + 32 }, { wMouse.x, wMouse.y});
         projectileFactory(world, {
          .texture = bulletTexture,
          .owner = { e.id },
          .pos = { playerPos.x + 32, playerPos.y + 32 },
-         .direction = dir,
+         .direction = { dir.x, dir.y },
          .speed = { 10 },
          .damage = { 10 },
          .hitBox = { playerPos.x + 32, playerPos.y + 32, 16, 8 }
@@ -105,16 +105,30 @@ inline void handleCameraMovement(Camera2D& camera, const Vector2& vMouse) {
     if (nearRight)  camera.target.x += mvSpd;
 }
 
+inline void handleAbilities(World& world,Entity& e , Camera2D& camera, const Vector2& mouse) {
+    if (IsKeyDown(KEY_SPACE)) {
+        log("should be dashing now");
+        ComponentStore<AbilitySet>& abilities = world.getStore<AbilitySet>();
+        Position pos = world.getStore<Position>().get(e.id);
+        if (abilities.has(e.id)) {
+            Ability& ability = abilities.get(e.id).ability[0];
+            ability.dir = calculateDirectionVec({pos.x, pos.y}, {mouse.x, mouse.y});
+            ability.effect(world, ability);
+        }
+    }
+}
+
 struct InputSystem {
     World &world;
     Camera2D& camera; 
     Vector2 VirtualScale; //scale of monitiorSize / VirtualSize
     void processInput(Entity e) {
-        auto [mouseX, mouseY] = getMouseWorldPosition(camera, VirtualScale);
+        Vector2 mouse = getMouseWorldPosition(camera, VirtualScale);
         Vector2 vMouse = getMouseVirtualPosition(camera, VirtualScale);
 
         handleMovement(world, e);
         handleCameraMovement(camera, vMouse);
-        handleMouseLeftClick(world, e, { mouseX, mouseY });
+        handleMouseLeftClick(world, e, { mouse.x, mouse.y });
+        handleAbilities(world, e,camera, mouse);
     }
 };

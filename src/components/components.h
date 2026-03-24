@@ -10,6 +10,8 @@
 
 #include "components/entity.h"
 
+#define MAX_ABILITIES 4
+
 struct World;
 
 enum CollisionType {
@@ -26,7 +28,14 @@ struct Ability {
     float cdProg;
     float duration;
     void (*effect)(World&, Ability&);
-    int keyBind;
+    int parent;
+    Vector2 dir;
+};
+
+//*********Componentents**********
+struct AbilitySet {
+    Ability ability[MAX_ABILITIES];
+    int count; 
 };
 struct AnchorPoint { float x; float y; };
 struct CollisionBehavour { CollisionType type = DEFAULT; bool destroyOnCollide = false; };
@@ -36,7 +45,8 @@ struct Health { int max; int current; };
 struct HitBox { Rectangle rect; };
 struct LifeTime { 
     float remaining;
-    void (*onExpire)(World&, const Entity&);
+    int contextId; //general purpose id, onExpire implementation defines what this points to. eg. do something to another entity this lifetime is not attached to on expiration
+    void (*onExpire)(World&, LifeTime&);
 };
 struct Owner { int id; };
 struct Position { float x; float y; };
@@ -47,7 +57,7 @@ struct UiElement { UiElementType type; bool visible; };
 struct VelocityOveride { float x; float y; int speed; };
 
 using Components = std::tuple<
-    Ability,
+    AbilitySet,
     AnchorPoint,
     CollisionBehavour,
     Damage,
@@ -63,6 +73,7 @@ using Components = std::tuple<
     UiElement,
     VelocityOveride
 >;
+//********************************
 
 static constexpr int MaxComponents = std::tuple_size_v<Components>;
 

@@ -20,6 +20,7 @@ inline void renderUiElement(World& world, int id) {
     ComponentStore<Renderable> renderables = world.getStore<Renderable>();
     ComponentStore<Size> sizes = world.getStore<Size>();
     if (!element.visible ||
+        !owners.has(id) ||
         !positions.has(owners.get(id).id)
     ) {
         return;
