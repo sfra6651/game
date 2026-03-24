@@ -1,14 +1,17 @@
 #pragma once
 #include "components/components.h"
+#include "components/entity.h"
 #include "ecs/world.h"
 
 struct LifeTimeSystem {
     World& world;
     std::vector<int> removals;
     void processLifeTimes() {
+        removals.clear();
         ComponentStore<LifeTime>& store = world.getStore<LifeTime>();
         for (int i = 0; i < world.entities.count; i++) {
-            int id = world.entities.get(id).id;
+            int id = world.entities.list[i].id;
+            if(id == REMOVED_ENTITY_ID || !store.has(id)) { continue; };
             LifeTime& lifetime = store.get(id);
             lifetime.remaining -= TICK_RATE;
             if (lifetime.remaining <= 0) {
@@ -17,13 +20,18 @@ struct LifeTimeSystem {
             }
             //tick down abilities
             if (world.getStore<AbilitySet>().has(id)) {
-                tickDownAbilities(id);
             }
 
         }
 
+
         for (auto& id : removals) {
-            world.entities.remove(id);
+            world.erase(world.entities.get(id));
+        }
+
+        ComponentStore<AbilitySet>& abStore = world.getStore<AbilitySet>();
+        for (int i = 0; i < abStore.entities.size(); i++) {
+            tickDownAbilities(abStore.entities[i]);
         }
     }
 

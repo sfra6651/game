@@ -24,12 +24,14 @@ enum UiElementType {
 };
 
 struct Ability { 
-    float cd;
-    float cdProg;
-    float duration;
+    float cd {};
+    float cdProg {};
+    float distance {};
+    Vector2 dir {};
+    float duration {};
     void (*effect)(World&, Ability&);
-    int parent;
-    Vector2 dir;
+    float speed {};
+    int parent {};
 };
 
 //*********Componentents**********

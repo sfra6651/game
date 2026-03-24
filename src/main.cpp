@@ -69,9 +69,10 @@ int main() {
         .hitBox = {WORLD_WIDTH/2.0f, WORLD_HEIGHT/2.0f, 64, 64},
     });
     Ability dashAbility = {
-        .cd = 10.0f,
+        .cd = 1.0f,
         .cdProg = 0.0f,
-        .duration = 2.0f,
+        .distance = 200.0f,
+        .duration = 0.3f,
         .effect = dash,
         .parent = player.id
     };
@@ -120,6 +121,7 @@ int main() {
         accumulator += frameTime;
         world.processInput();
         if (accumulator >= TICK_RATE) {
+            world.processLifeTimes();
             world.processPhysics();
             world.processCollisions();
             accumulator -= TICK_RATE;

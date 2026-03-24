@@ -107,7 +107,6 @@ inline void handleCameraMovement(Camera2D& camera, const Vector2& vMouse) {
 
 inline void handleAbilities(World& world,Entity& e , Camera2D& camera, const Vector2& mouse) {
     if (IsKeyDown(KEY_SPACE)) {
-        log("should be dashing now");
         ComponentStore<AbilitySet>& abilities = world.getStore<AbilitySet>();
         Position pos = world.getStore<Position>().get(e.id);
         if (abilities.has(e.id)) {
