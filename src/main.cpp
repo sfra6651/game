@@ -66,12 +66,12 @@ int main() {
         .texture = {world.textureManager.get("space_marine_top_down.png")},
         .pos = {WORLD_WIDTH/2.0f, WORLD_HEIGHT/2.0f},
         .speed = { 5 },
-        .hitBox = {WORLD_WIDTH/2.0f, WORLD_HEIGHT/2.0f, 64, 64},
+        .hitBox = { 64, 64 },
     });
     Ability dashAbility = {
         .cd = 1.0f,
         .cdProg = 0.0f,
-        .distance = 200.0f,
+        .distance = 400.0f,
         .duration = 0.3f,
         .effect = dash,
         .parent = player.id
@@ -87,7 +87,7 @@ int main() {
         .texture = {world.textureManager.get("ork_down.png")},
         .pos = { WORLD_WIDTH/2.0f + 200, WORLD_HEIGHT/2.0f + 200},
         .speed = { 0 },
-        .hitBox = { WORLD_WIDTH/2.0f + 200, WORLD_HEIGHT/2.0f + 200, 64, 64},
+        .hitBox = { 64, 64 },
     };
     Entity ork = orkBuilder.attachToWorld(world);
     orkBuilder.attachHealthBar(world, {

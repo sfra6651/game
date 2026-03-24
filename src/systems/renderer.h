@@ -112,8 +112,8 @@ struct RenderingSystem{
                 (float)renderables.get(e_id).texture.height
             };
             Rectangle dest { 
-                positions.get(e_id).x,
-                positions.get(e_id).y,
+                positions.get(e_id).x - (int)(sizes.get(e_id).width / 2),
+                positions.get(e_id).y - (int)(sizes.get(e_id).height / 2),
                 (float)sizes.get(e_id).width,
                 (float)sizes.get(e_id).height
             };
@@ -121,7 +121,13 @@ struct RenderingSystem{
 
             bool drawHitbox = false;
             if (drawHitbox && world.getStore<HitBox>().has(e_id)) {
-               DrawRectangleLinesEx(world.getStore<HitBox>().get(e_id).rect, 1, GREEN);
+                HitBox& hb = world.getStore<HitBox>().get(e_id);
+               DrawRectangleLinesEx({
+                    (float)sizes.get(e_id).width - hb.width/2,
+                    (float)sizes.get(e_id).height - hb.height/2,
+                    hb.width,
+                    hb.height,
+                }, 1, GREEN);
             }
             DrawTexturePro(renderables.get(e_id).texture , src, dest, {0, 0}, 0.0f, WHITE );
         };

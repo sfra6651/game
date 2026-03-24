@@ -69,15 +69,15 @@ inline void handleMouseLeftClick(World& world, Entity& e, const Vector2& wMouse)
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
         Position playerPos = world.getStore<Position>().get(e.id);
         Texture2D bulletTexture = world.textureManager.get("bullet.png");
-        Vector2 dir = calculateDirectionVec({ playerPos.x + 32, playerPos.y + 32 }, { wMouse.x, wMouse.y});
+        Vector2 dir = calculateDirectionVec({ playerPos.x, playerPos.y}, { wMouse.x, wMouse.y});
         projectileFactory(world, {
          .texture = bulletTexture,
          .owner = { e.id },
-         .pos = { playerPos.x + 32, playerPos.y + 32 },
+         .pos = { playerPos.x, playerPos.y},
          .direction = { dir.x, dir.y },
          .speed = { 10 },
          .damage = { 10 },
-         .hitBox = { playerPos.x + 32, playerPos.y + 32, 16, 8 }
+         .hitBox = { 16.0f, 8.0f }
      });
     }
 }

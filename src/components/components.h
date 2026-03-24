@@ -44,7 +44,7 @@ struct CollisionBehavour { CollisionType type = DEFAULT; bool destroyOnCollide =
 struct Damage { int v; };
 struct Direction { float x; float y; };
 struct Health { int max; int current; };
-struct HitBox { Rectangle rect; };
+struct HitBox { float width; float height; };
 struct LifeTime { 
     float remaining;
     int contextId; //general purpose id, onExpire implementation defines what this points to. eg. do something to another entity this lifetime is not attached to on expiration

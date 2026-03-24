@@ -100,7 +100,7 @@ struct CollisionSystem {
             }
             Position pos = world.getStore<Position>().get(eId);
             HitBox& hitBox = world.getStore<HitBox>().get(eId);
-            tree.insert(eId, Rectangle{hitBox.rect.x, hitBox.rect.y, hitBox.rect.width, hitBox.rect.height});
+            tree.insert(eId, Rectangle{pos.x - (int)(hitBox.width/2), pos.y - (int)(hitBox.height/2), hitBox.width, hitBox.height});
 
         }
 
@@ -112,14 +112,21 @@ struct CollisionSystem {
 
             Position pos = world.getStore<Position>().get(eId);
             HitBox hitBox = world.getStore<HitBox>().get(eId);
-            Rectangle rect{hitBox.rect.x, hitBox.rect.y, hitBox.rect.width, hitBox.rect.height};
+            Rectangle rect{pos.x - (int)(hitBox.width/2),pos.y - (int)(hitBox.height/2), hitBox.width, hitBox.height};
 
             std::vector<int> nearby{};
             tree.query(rect, nearby);   // only entities in same region
 
             for (const int other_id : nearby) {
                 if (other_id == eId) continue;
-                if (CheckCollisionRecs(rect, world.getStore<HitBox>().get(other_id).rect)) {
+                HitBox& otherHb = world.getStore<HitBox>().get(other_id);
+                Position otherPos = world.getStore<Position>().get(other_id);
+                if (CheckCollisionRecs(rect,{
+                    otherPos.x - (int)(otherHb.width/2),
+                    otherPos.y - (int)(otherHb.height/2),
+                    otherHb.width,
+                    otherHb.height,
+                })) {
                     handleCollision(eId, other_id);
                     break;
                 }
