@@ -81,8 +81,8 @@ int main() {
         .cd = 1.0f,
         .cdProg = 0.0f,
         .distance = 400.0f,
-        .duration = 0.5f,
-        .width = 100.0f,
+        .duration = 0.2f,
+        .width = 200.0f,
         .effect = frontalCone,
     };
     world.attach(player, world.getStore<AbilitySet>(), {

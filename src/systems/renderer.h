@@ -149,12 +149,12 @@ struct RenderingSystem{
                             WHITE
             );
 
-            bool drawHitbox = true;
+            bool drawHitbox = false;
             if (drawHitbox && world.getStore<HitBox>().has(e_id)) {
                 HitBox& hb = world.getStore<HitBox>().get(e_id);
                drawRectangleRotatedLines({pos.x, pos.y}, hb.width, hb.height, pos.rt, GREEN);
             }
-            bool drawPosition = true;
+            bool drawPosition = false;
             if (drawPosition) {
                 DrawCircle(pos.x, pos.y, 3.0f, RED);
             }

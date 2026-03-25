@@ -206,25 +206,23 @@ struct CollisionSystem {
         ComponentStore<Damage>& damageStore = world.getStore<Damage>();
         ComponentStore<Owner>& ownerStore = world.getStore<Owner>();
         ComponentStore<CollisionBehavour>& behavourStore = world.getStore<CollisionBehavour>();
-
+        ComponentStore<Health>& healthStore = world.getStore<Health>();
 
         if (!damageStore.has(e_id)) {
             return;
         }
 
-        if (behavourStore.get(e_id).type == DEALS_DAMAGE) {
+        if (behavourStore.get(e_id).type == DEALS_DAMAGE && healthStore.has(other_e_id)) {
             resolveDamage(e_id, other_e_id);           
         }
-
-        if (behavourStore.get(e_id).destroyOnCollide == true) {
-            removals.push_back(e_id);
-        }
-
     }
 
     void resolveDamage(int e_id, int target_id) {
         ComponentStore<HasDamaged>& hasDamgedStore = world.getStore<HasDamaged>();
-
+        ComponentStore<CollisionBehavour>& behavourStore = world.getStore<CollisionBehavour>();
+        if (behavourStore.get(e_id).destroyOnCollide == true) {
+            removals.push_back(e_id);
+        }
         if(hasDamgedStore.has(e_id)) {
             std::vector<int>& ids = hasDamgedStore.get(e_id).ids;
             if (std::find(ids.begin(), ids.end(), target_id) != ids.end()) {

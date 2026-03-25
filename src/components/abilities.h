@@ -55,6 +55,6 @@ inline void frontalCone(World& world, Ability& self) {
 
     //renderable components 
     world.attach(hitBox, world.getStore<Size>(), { (int)self.distance, (int)self.width });
-    Texture2D& texture = world.textureManager.get("white_square");
+    Texture2D& texture = world.textureManager.get("lightning_cone.png");
     world.attach(hitBox, world.getStore<Renderable>(), { .texture = texture });
 }
