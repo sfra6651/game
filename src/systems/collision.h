@@ -8,6 +8,71 @@
 #include "ecs/world.h"
 #include "components/componentGroups.h"
 
+  // Helper: get the 4 corners of a rotated rectangle
+inline void getRotatedCorners(Vector2 center, float w, float h, float rotDeg, Vector2 out[4]) {
+      float rad = rotDeg * DEG2RAD;
+      float c = cosf(rad);
+      float s = sinf(rad);
+      float hw = w / 2.0f;
+      float hh = h / 2.0f;
+      out[0] = { center.x + c*(-hw) - s*(-hh), center.y + s*(-hw) + c*(-hh) };
+      out[1] = { center.x + c*( hw) - s*(-hh), center.y + s*( hw) + c*(-hh) };
+      out[2] = { center.x + c*( hw) - s*( hh), center.y + s*( hw) + c*( hh) };
+      out[3] = { center.x + c*(-hw) - s*( hh), center.y + s*(-hw) + c*( hh) };
+}
+
+  // Helper: project all corners onto an axis, return min and max
+inline void projectOntoAxis(Vector2 corners[4], Vector2 axis, float& min, float& max) {
+      min = max = corners[0].x * axis.x + corners[0].y * axis.y;
+      for (int i = 1; i < 4; i++) {
+          float proj = corners[i].x * axis.x + corners[i].y * axis.y;
+          if (proj < min) min = proj;
+          if (proj > max) max = proj;
+      }
+}
+
+  // SAT check: do two rotated rectangles overlap?
+inline bool checkRotatedCollision(Vector2 posA, float wA, float hA, float rotA,
+    Vector2 posB, float wB, float hB, float rotB)
+{
+      Vector2 cornersA[4], cornersB[4];
+      getRotatedCorners(posA, wA, hA, rotA, cornersA);
+      getRotatedCorners(posB, wB, hB, rotB, cornersB);
+
+      // 4 axes: 2 edge normals from each rectangle
+      Vector2 axes[4];
+      // Edges of rect A
+      axes[0] = { cornersA[1].x - cornersA[0].x, cornersA[1].y - cornersA[0].y };
+      axes[1] = { cornersA[1].x - cornersA[2].x, cornersA[1].y - cornersA[2].y };
+      // Edges of rect B
+      axes[2] = { cornersB[1].x - cornersB[0].x, cornersB[1].y - cornersB[0].y };
+      axes[3] = { cornersB[1].x - cornersB[2].x, cornersB[1].y - cornersB[2].y };
+
+      for (int i = 0; i < 4; i++) {
+          float minA, maxA, minB, maxB;
+          projectOntoAxis(cornersA, axes[i], minA, maxA);
+          projectOntoAxis(cornersB, axes[i], minB, maxB);
+          // If there's a gap on this axis, no collision
+          if (maxA < minB || maxB < minA) return false;
+      }
+      return true;
+}
+
+// Compute AABB that encloses a rotated rectangle (for broad-phase)
+inline Rectangle getRotatedAABB(Vector2 center, float w, float h, float rotDeg) {
+    Vector2 corners[4];
+    getRotatedCorners(center, w, h, rotDeg, corners);
+    float minX = corners[0].x, maxX = corners[0].x;
+    float minY = corners[0].y, maxY = corners[0].y;
+    for (int i = 1; i < 4; i++) {
+        if (corners[i].x < minX) minX = corners[i].x;
+        if (corners[i].x > maxX) maxX = corners[i].x;
+        if (corners[i].y < minY) minY = corners[i].y;
+        if (corners[i].y > maxY) maxY = corners[i].y;
+    }
+    return { minX, minY, maxX - minX, maxY - minY };
+}
+
 struct QuadTree {
       Rectangle bounds;
       std::vector<std::pair<int, Rectangle>> entities;
@@ -100,7 +165,7 @@ struct CollisionSystem {
             }
             Position pos = world.getStore<Position>().get(eId);
             HitBox& hitBox = world.getStore<HitBox>().get(eId);
-            tree.insert(eId, Rectangle{pos.x - (int)(hitBox.width/2), pos.y - (int)(hitBox.height/2), hitBox.width, hitBox.height});
+            tree.insert(eId, getRotatedAABB({pos.x, pos.y}, hitBox.width, hitBox.height, pos.rt));
 
         }
 
@@ -112,21 +177,20 @@ struct CollisionSystem {
 
             Position pos = world.getStore<Position>().get(eId);
             HitBox hitBox = world.getStore<HitBox>().get(eId);
-            Rectangle rect{pos.x - (int)(hitBox.width/2),pos.y - (int)(hitBox.height/2), hitBox.width, hitBox.height};
+            Rectangle rect = getRotatedAABB({pos.x, pos.y}, hitBox.width, hitBox.height, pos.rt);
 
             std::vector<int> nearby{};
-            tree.query(rect, nearby);   // only entities in same region
+            tree.query(rect, nearby);   // broad phase: AABB query
 
             for (const int other_id : nearby) {
                 if (other_id == eId) continue;
                 HitBox& otherHb = world.getStore<HitBox>().get(other_id);
                 Position otherPos = world.getStore<Position>().get(other_id);
-                if (CheckCollisionRecs(rect,{
-                    otherPos.x - (int)(otherHb.width/2),
-                    otherPos.y - (int)(otherHb.height/2),
-                    otherHb.width,
-                    otherHb.height,
-                })) {
+                // narrow phase: precise rotated collision
+                if (checkRotatedCollision(
+                    {pos.x, pos.y}, hitBox.width, hitBox.height, pos.rt,
+                    {otherPos.x, otherPos.y}, otherHb.width, otherHb.height, otherPos.rt))
+                {
                     handleCollision(eId, other_id);
                     break;
                 }

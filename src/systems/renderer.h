@@ -11,6 +11,26 @@
 #include "ecs/world.h"
 #include "lib/utils.h"
 
+inline void drawRectangleRotatedLines(Vector2 center, float width, float height, float rotation, Color color) {
+    float rad = rotation * DEG2RAD;
+    float c = cosf(rad);
+    float s = sinf(rad);
+    float hw = width / 2.0f;
+    float hh = height / 2.0f;
+
+    // corners relative to center, then rotated
+    Vector2 corners[4] = {
+        { center.x + c * (-hw) - s * (-hh), center.y + s * (-hw) + c * (-hh) },
+        { center.x + c * ( hw) - s * (-hh), center.y + s * ( hw) + c * (-hh) },
+        { center.x + c * ( hw) - s * ( hh), center.y + s * ( hw) + c * ( hh) },
+        { center.x + c * (-hw) - s * ( hh), center.y + s * (-hw) + c * ( hh) },
+    };
+
+    for (int i = 0; i < 4; i++) {
+        DrawLineV(corners[i], corners[(i + 1) % 4], color);
+    }
+}
+
 inline void renderUiElement(World& world, int id) {
     const UiElement& element = world.getStore<UiElement>().get(id);
     ComponentStore<Health> healths = world.getStore<Health>();
@@ -129,15 +149,10 @@ struct RenderingSystem{
                             WHITE
             );
 
-            bool drawHitbox = false;
+            bool drawHitbox = true;
             if (drawHitbox && world.getStore<HitBox>().has(e_id)) {
                 HitBox& hb = world.getStore<HitBox>().get(e_id);
-               DrawRectangleLinesEx({
-                    (float)size.width - hb.width/2,
-                    (float)size.height - hb.height/2,
-                    hb.width,
-                    hb.height,
-                }, 1, GREEN);
+               drawRectangleRotatedLines({pos.x, pos.y}, hb.width, hb.height, pos.rt, GREEN);
             }
             bool drawPosition = true;
             if (drawPosition) {
