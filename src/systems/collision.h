@@ -143,9 +143,15 @@ struct CollisionSystem {
         ComponentStore<Owner>& ownerStore = world.getStore<Owner>();
         ComponentStore<CollisionBehavour>& behavourStore = world.getStore<CollisionBehavour>();
 
-        if (damageStore.has(e_id) && behavourStore.get(e_id).type == DEALS_DAMAGE) {
-             resolveDamage(e_id, other_e_id);           
+
+        if (!damageStore.has(e_id)) {
+            return;
         }
+
+        if (behavourStore.get(e_id).type == DEALS_DAMAGE) {
+            resolveDamage(e_id, other_e_id);           
+        }
+
         if (behavourStore.get(e_id).destroyOnCollide == true) {
             removals.push_back(e_id);
         }
@@ -153,6 +159,18 @@ struct CollisionSystem {
     }
 
     void resolveDamage(int e_id, int target_id) {
+        ComponentStore<HasDamaged>& hasDamgedStore = world.getStore<HasDamaged>();
+
+        if(hasDamgedStore.has(e_id)) {
+            std::vector<int>& ids = hasDamgedStore.get(e_id).ids;
+            if (std::find(ids.begin(), ids.end(), target_id) != ids.end()) {
+                //exists
+                return;
+            }
+            ids.push_back(target_id);
+        }
+        hasDamgedStore.add(e_id, {.ids = { target_id } });
+
         world.getStore<Health>().get(target_id).current -= world.getStore<Damage>().get(e_id).v;
         if (world.getStore<Health>().get(target_id).current <= 0) {
             removals.push_back(target_id);

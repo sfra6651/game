@@ -49,7 +49,7 @@ struct AbilitySet {
 struct AnchorPoint { float x; float y; };
 struct CollisionBehavour { CollisionType type = DEFAULT; bool destroyOnCollide = false; };
 struct Damage { int v; int perTick; DamageType type; };
-struct DamagedBy { int id; };
+struct HasDamaged { std::vector<int> ids; };
 struct Direction { float x; float y; };
 struct Health { int max; int current; };
 struct HitBox { float width; float height; };
@@ -59,7 +59,7 @@ struct LifeTime {
     void (*onExpire)(World&, LifeTime&);
 };
 struct Owner { int id; };
-struct Position { float x; float y; };
+struct Position { float x; float y; float rt; };
 struct Renderable { Texture2D texture; };
 struct Speed { int v; };
 struct Size { int width; int height; };
@@ -71,8 +71,8 @@ using Components = std::tuple<
     AnchorPoint,
     CollisionBehavour,
     Damage,
-    DamagedBy,
     Direction,
+    HasDamaged,
     Health,
     HitBox,
     LifeTime,

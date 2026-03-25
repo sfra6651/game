@@ -33,7 +33,7 @@ inline void renderUiElement(World& world, int id) {
         anchorPoints.has(id)
     ) { 
         auto [offsetX, offsetY] = anchorPoints.get(id);
-        auto [parentX, parentY] = positions.get(ownerId);
+        auto [parentX, parentY, parentRt] = positions.get(ownerId);
         Rectangle src {
             0.0f,
             0.0f,
@@ -105,6 +105,9 @@ struct RenderingSystem{
                 continue;
             }
 
+            Size& size = sizes.get(e_id);
+            Position& pos = positions.get(e_id);
+
             Rectangle src {
                 0,
                 0,
@@ -112,24 +115,35 @@ struct RenderingSystem{
                 (float)renderables.get(e_id).texture.height
             };
             Rectangle dest { 
-                positions.get(e_id).x - (int)(sizes.get(e_id).width / 2),
-                positions.get(e_id).y - (int)(sizes.get(e_id).height / 2),
-                (float)sizes.get(e_id).width,
-                (float)sizes.get(e_id).height
+                pos.x, // confusingly the origin in DrawTexturePro also shifs the anchor point or something
+                pos.y, // so we need to not apply the shift here but later
+                (float)size.width,
+                (float)size.height
             };
             renderUiElement(world, e_id);
+            DrawTexturePro(renderables.get(e_id).texture,
+                            src,
+                            dest,
+                            {dest.width/2, dest.height/2}, // now we apply the shift so that texture is correctly centered on position
+                            pos.rt,
+                            WHITE
+            );
 
             bool drawHitbox = false;
             if (drawHitbox && world.getStore<HitBox>().has(e_id)) {
                 HitBox& hb = world.getStore<HitBox>().get(e_id);
                DrawRectangleLinesEx({
-                    (float)sizes.get(e_id).width - hb.width/2,
-                    (float)sizes.get(e_id).height - hb.height/2,
+                    (float)size.width - hb.width/2,
+                    (float)size.height - hb.height/2,
                     hb.width,
                     hb.height,
                 }, 1, GREEN);
             }
-            DrawTexturePro(renderables.get(e_id).texture , src, dest, {0, 0}, 0.0f, WHITE );
+            bool drawPosition = true;
+            if (drawPosition) {
+                DrawCircle(pos.x, pos.y, 3.0f, RED);
+            }
+          
         };
     }
 

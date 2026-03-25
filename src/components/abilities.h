@@ -8,7 +8,6 @@
 
 inline void dash(World& world, Ability& self) {
     if (self.cdProg > 0) { return; }
-    log("dashing");
     Entity& parent = world.entityManager.get(self.parent);
     int speed = self.distance * TICK_RATE / self.duration;
     world.attach(parent, world.getStore<VelocityOveride>(), {self.dir.x, self.dir.y, speed });
@@ -27,7 +26,6 @@ inline void dash(World& world, Ability& self) {
 
 inline void frontalCone(World& world, Ability& self) {
     if (self.cdProg > 0) { return; };
-    log("frontaCone");
     Entity& parent = world.entityManager.get(self.parent);
 
     if (!world.getStore<Position>().has(parent.id)) { return; }
@@ -42,6 +40,7 @@ inline void frontalCone(World& world, Ability& self) {
     world.attach(hitBox, world.getStore<Position>(), {
         .x = parentPos.x + self.dir.x * self.distance/2, //destination point (1/2 distance for center of hitbox)
         .y = parentPos.y + self.dir.y * self.distance/2,
+        .rt = atan2f(self.dir.y, self.dir.x) * RAD2DEG,
     });
     world.attach(hitBox, world.getStore<LifeTime>(), {
         .contextId = hitBox.id,
