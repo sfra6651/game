@@ -6,27 +6,26 @@
 struct LifeTimeSystem {
     World& world;
     std::vector<int> removals;
+
+    // remove entities whos remaing duration has expired and trigger the onExpire function.
+    // tick down each lifetime by the tick rate.
     void processLifeTimes() {
         removals.clear();
         ComponentStore<LifeTime>& store = world.getStore<LifeTime>();
-        for (int i = 0; i < world.entities.count; i++) {
-            int id = world.entities.list[i].id;
+        for (int i = 0; i < world.entityManager.count; i++) {
+            int id = world.entityManager.list[i].id;
             if(id == REMOVED_ENTITY_ID || !store.has(id)) { continue; };
             LifeTime& lifetime = store.get(id);
             lifetime.remaining -= TICK_RATE;
             if (lifetime.remaining <= 0) {
-                lifetime.onExpire(world, lifetime);
-                removals.push_back(id);
+                lifetime.onExpire(world, lifetime); //triger the onExpire
+                removals.push_back(id); //remove entity associated with the lifetime
             }
-            //tick down abilities
-            if (world.getStore<AbilitySet>().has(id)) {
-            }
-
         }
 
 
         for (auto& id : removals) {
-            world.erase(world.entities.get(id));
+            world.erase(world.entityManager.get(id));
         }
 
         ComponentStore<AbilitySet>& abStore = world.getStore<AbilitySet>();

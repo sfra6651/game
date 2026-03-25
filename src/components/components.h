@@ -19,19 +19,26 @@ enum CollisionType {
     DEALS_DAMAGE,
 };
 
+enum DamageType {
+    ON_COLLIDE,
+    CONTINUOUS,
+};
+
 enum UiElementType {
     HEALTH_BAR,
 };
 
 struct Ability { 
+    int parent {};
+    int damage {};
     float cd {};
     float cdProg {};
     float distance {};
-    Vector2 dir {};
     float duration {};
+    float width {};
     void (*effect)(World&, Ability&);
-    float speed {};
-    int parent {};
+    Vector2 dir {};
+    Vector2 pos {};
 };
 
 //*********Componentents**********
@@ -41,13 +48,14 @@ struct AbilitySet {
 };
 struct AnchorPoint { float x; float y; };
 struct CollisionBehavour { CollisionType type = DEFAULT; bool destroyOnCollide = false; };
-struct Damage { int v; };
+struct Damage { int v; int perTick; DamageType type; };
+struct DamagedBy { int id; };
 struct Direction { float x; float y; };
 struct Health { int max; int current; };
 struct HitBox { float width; float height; };
 struct LifeTime { 
+    int contextId; //general purpose id if we want to do something else with something other than parent. could be entity or component.
     float remaining;
-    int contextId; //general purpose id, onExpire implementation defines what this points to. eg. do something to another entity this lifetime is not attached to on expiration
     void (*onExpire)(World&, LifeTime&);
 };
 struct Owner { int id; };
@@ -63,6 +71,7 @@ using Components = std::tuple<
     AnchorPoint,
     CollisionBehavour,
     Damage,
+    DamagedBy,
     Direction,
     Health,
     HitBox,

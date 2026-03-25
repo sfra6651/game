@@ -106,11 +106,19 @@ inline void handleCameraMovement(Camera2D& camera, const Vector2& vMouse) {
 }
 
 inline void handleAbilities(World& world,Entity& e , Camera2D& camera, const Vector2& mouse) {
+    ComponentStore<AbilitySet>& abilitySetStore = world.getStore<AbilitySet>();
     if (IsKeyDown(KEY_SPACE)) {
-        ComponentStore<AbilitySet>& abilities = world.getStore<AbilitySet>();
         Position pos = world.getStore<Position>().get(e.id);
-        if (abilities.has(e.id)) {
-            Ability& ability = abilities.get(e.id).ability[0];
+        if (abilitySetStore.has(e.id)) {
+            Ability& ability = abilitySetStore.get(e.id).ability[0];
+            ability.dir = calculateDirectionVec({pos.x, pos.y}, {mouse.x, mouse.y});
+            ability.effect(world, ability);
+        }
+    }
+    if (IsKeyDown(KEY_ONE)) {
+        Position pos = world.getStore<Position>().get(e.id);
+        if (abilitySetStore.has(e.id)) {
+            Ability& ability = abilitySetStore.get(e.id).ability[1];
             ability.dir = calculateDirectionVec({pos.x, pos.y}, {mouse.x, mouse.y});
             ability.effect(world, ability);
         }

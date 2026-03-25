@@ -15,6 +15,11 @@ struct TextureManager {
             Texture2D texture = LoadTexture(entry.path().string().c_str());
             textures[filename] = texture;
         }
+
+        Image img = GenImageColor(100, 100, WHITE);
+        Texture2D texture = LoadTextureFromImage(img);
+        UnloadImage(img);
+        textures["white_square"] = texture;
     }
 
     Texture2D& get(const std::string& filename) {

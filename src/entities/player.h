@@ -15,11 +15,11 @@ struct PlayerConfig {
     HitBox hitBox = {};
 };
 
-inline Entity playerFactory(
+inline Entity& playerFactory(
     World &world,
     PlayerConfig config)
 {
-    const Entity player = world.entities.create();
+    Entity& player = world.entityManager.create();
     world.attach(player, world.getStore<Position>(), config.pos);
     world.attach(player, world.getStore<Renderable>(), Renderable{config.texture});
     world.attach(player, world.getStore<Size>(), config.size);

@@ -11,7 +11,7 @@ struct Entity {
 
 #define MAX_ENTITIES 1000
 
-struct Entities {
+struct EntityManager {
     int count;
     std::vector<int> freeList;
     Entity list[MAX_ENTITIES]{};
@@ -20,7 +20,7 @@ struct Entities {
         return list[id];
     }
 
-    Entity create() {
+    Entity& create() {
         int id;
         if (!freeList.empty()) {
             id = freeList[freeList.size() - 1];

@@ -62,25 +62,34 @@ int main() {
     Texture2D tilesTexture = LoadTexture("./assets/textures/ork_world_tileset.png");
     std::fill(&world.tilemap[0][0], &world.tilemap[MAP_ROWS-1][MAP_COLS], 0);
 
-    Entity player = playerFactory(world, {
+    Entity& player = playerFactory(world, {
         .texture = {world.textureManager.get("space_marine_top_down.png")},
         .pos = {WORLD_WIDTH/2.0f, WORLD_HEIGHT/2.0f},
         .speed = { 5 },
         .hitBox = { 64, 64 },
     });
     Ability dashAbility = {
+        .parent = player.id,
         .cd = 1.0f,
         .cdProg = 0.0f,
         .distance = 400.0f,
         .duration = 0.3f,
         .effect = dash,
-        .parent = player.id
     };
-
+    Ability coneAbility = {
+        .damage = 50,
+        .cd = 1.0f,
+        .cdProg = 0.0f,
+        .distance = 400.0f,
+        .duration = 0.5f,
+        .width = 100.0f,
+        .effect = frontalCone,
+    };
     world.attach(player, world.getStore<AbilitySet>(), {
-        .ability = { dashAbility },
-        .count = 1
+        .ability = { dashAbility, coneAbility },
+        .count = 2
     });
+
 
 
     EnemyBuilder orkBuilder = {
@@ -89,7 +98,7 @@ int main() {
         .speed = { 0 },
         .hitBox = { 64, 64 },
     };
-    Entity ork = orkBuilder.attachToWorld(world);
+    Entity& ork = orkBuilder.attachToWorld(world);
     orkBuilder.attachHealthBar(world, {
         .texture = world.textureManager.get("health_bar_fill.png"),
         .owner = { ork.id }

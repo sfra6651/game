@@ -19,7 +19,7 @@
 
 
 struct World {
-    Entities entities{};
+    EntityManager entityManager{};
     int tilemap[MAP_ROWS][MAP_COLS] {};
     TextureManager textureManager {};
 
@@ -73,7 +73,7 @@ struct World {
         for (int i = owners.entities.size() - 1; i >= 0; i--) {                                                                      
             if (owners.dense[i].id == entity.id) {
                 int childId = owners.entities[i];
-                erase(entities.get(childId));
+                erase(entityManager.get(childId));
             }
         }
         // remove all components for the entity
@@ -82,7 +82,7 @@ struct World {
         }, stores);
 
         //remove entity
-        entities.remove(entity.id);
+        entityManager.remove(entity.id);
 
     }
 };

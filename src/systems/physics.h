@@ -18,11 +18,11 @@ struct PhysicsSystem {
         ComponentStore<Owner>& owners = world.getStore<Owner>();
         ComponentStore<VelocityOveride>& velocityOverides = world.getStore<VelocityOveride>();
 
-        int count = world.entities.count;
+        int count = world.entityManager.count;
         std::vector<int> removals {};
 
         for (int i = 0; i < count; i++) {
-            int e_id = world.entities.list[i].id;
+            int e_id = world.entityManager.list[i].id;
             //guard
             if (e_id == REMOVED_ENTITY_ID
                 || !world.getStore<Direction>().has(e_id)
@@ -60,7 +60,7 @@ struct PhysicsSystem {
 
         //update entities with anchor points after main loop so we can guareenty parent position is up to date
         for (int i = 0; i < count; i++) {
-            Entity& e = world.entities.list[i];
+            Entity& e = world.entityManager.list[i];
             if (!anchorPoints.has(e.id) ||
                 !positions.has(e.id) ||
                 !owners.has(e.id)
@@ -81,7 +81,7 @@ struct PhysicsSystem {
 
         //process removals
         for (auto id : removals) {
-            world.erase(world.entities.list[id]);
+            world.erase(world.entityManager.list[id]);
         }
     }
 };

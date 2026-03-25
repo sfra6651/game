@@ -85,7 +85,7 @@ struct RenderingSystem{
     }
 
     void drawEntities() {
-        Entities &entities = world.entities;
+        EntityManager &entities = world.entityManager;
        ComponentStore<Position> &positions = world.getStore<Position>();
        ComponentStore<Renderable> &renderables = world.getStore<Renderable>();
        ComponentStore<Size> &sizes = world.getStore<Size>();

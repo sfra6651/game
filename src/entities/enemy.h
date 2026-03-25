@@ -26,7 +26,7 @@ struct EnemyBuilder {
     CollisionBehavour collisionBehavour;
 
     Entity& attachToWorld(World& world) {
-        Entity enemy  = world.entities.create();
+        Entity enemy  = world.entityManager.create();
         world.attach(enemy, world.getStore<Position>(), pos);
         world.attach(enemy, world.getStore<Renderable>(), { texture });
         world.attach(enemy, world.getStore<Size>(), size);
@@ -36,12 +36,12 @@ struct EnemyBuilder {
         world.attach(enemy, world.getStore<HitBox>(), hitBox);
         world.attach(enemy, world.getStore<CollisionBehavour>(), collisionBehavour);
 
-        return world.entities.get(enemy.id);
+        return world.entityManager.get(enemy.id);
 
     }
 
     void attachHealthBar(World& world, HealthBarConfig config) {
-        Entity healthBar = world.entities.create();
+        Entity healthBar = world.entityManager.create();
          
         world.attach(healthBar, world.getStore<Renderable>(), Renderable{config.texture});
         world.attach(healthBar, world.getStore<Position>(), config.pos);

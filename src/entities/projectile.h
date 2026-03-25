@@ -21,7 +21,7 @@ inline Entity projectileFactory (
     World &world,
     ProjectileConfig config)
 {
-    const Entity projectile = world.entities.create();
+    const Entity projectile = world.entityManager.create();
 
     world.attach(projectile, world.getStore<Owner>(), config.owner);
     world.attach(projectile, world.getStore<Position>(), config.pos);
